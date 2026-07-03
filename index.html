@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Beata's Recipe Box</title>
+<style>
+  :root {
+    --bg: #fbf9ff;
+    --card: #ffffff;
+    --ink: #2b2440;
+    --muted: #7a7292;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --teal: #14b8a6;
+    --accent: #8b5cf6;
+    --accent-soft: #f1e9ff;
+    --border: #e9e3f5;
+    --gradient: linear-gradient(120deg, var(--purple), var(--pink), var(--teal));
+
+    /* tag category colors: meal type / protein / method / other */
+    --meal-bg: #f1e9ff;   --meal-text: #6d28d9;   --meal-solid: #8b5cf6;
+    --protein-bg: #fde7f3; --protein-text: #be185d; --protein-solid: #ec4899;
+    --method-bg: #e3f9f6; --method-text: #0f766e;  --method-solid: #14b8a6;
+    --other-bg: #eef0f4;  --other-text: #55596b;   --other-solid: #55596b;
+    --sunset-soft: linear-gradient(120deg, #fef3e2, #fde3d3, #fbdbe0);
+    --sunset-text: #9a3412;
+    --sunset-solid: linear-gradient(120deg, #fbbf24, #f97316, #ef4444);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    background:
+      radial-gradient(40% 40% at 15% 20%, rgba(139,92,246,0.14), transparent 70%),
+      radial-gradient(35% 35% at 85% 15%, rgba(236,72,153,0.12), transparent 70%),
+      radial-gradient(45% 45% at 50% 95%, rgba(20,184,166,0.11), transparent 70%);
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+  }
+  header {
+    padding: 28px 24px 18px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 28px;
+  }
+  .grad-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+    min-height: 18px;
+    transition: opacity .4s ease;
+  }
+  .controls {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .search-row {
+    display: flex;
+    gap: 10px;
+  }
+  #search {
+    flex: 1;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+  }
+  .add-recipe-btn {
+    flex-shrink: 0;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--gradient);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139,92,246,0.25);
+  }
+  #search:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 0 0 6px rgba(20,184,166,0.08);
+  }
+  .tag-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag-chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--muted);
+    user-select: none;
+  }
+  .tag-chip.cat-meal    { background: var(--meal-bg);    color: var(--meal-text);    border-color: transparent; }
+  .tag-chip.cat-protein { background: var(--protein-bg); color: var(--protein-text); border-color: transparent; }
+  .tag-chip.cat-method  { background: var(--method-bg);  color: var(--method-text);  border-color: transparent; }
+  .tag-chip.cat-other   { background: var(--other-bg);   color: var(--other-text);   border-color: transparent; }
+
+  .tag-chip.cat-meal.active    { background: var(--meal-solid);    color: #fff; box-shadow: 0 2px 8px rgba(139,92,246,0.25); }
+  .tag-chip.cat-protein.active { background: var(--protein-solid); color: #fff; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
+  .tag-chip.cat-method.active  { background: var(--method-solid);  color: #fff; box-shadow: 0 2px 8px rgba(20,184,166,0.25); }
+  .tag-chip.cat-other.active   { background: var(--other-solid);   color: #fff; box-shadow: 0 2px 8px rgba(85,89,107,0.25); }
+  .tag-chip.cat-vibe    { background: var(--sunset-soft); color: var(--sunset-text); border-color: transparent; }
+  .tag-chip.cat-vibe.active { background: var(--sunset-solid); color: #fff; box-shadow: 0 2px 8px rgba(249,115,22,0.3); }
+  #count {
+    max-width: 1000px;
+    margin: 14px auto 0;
+    padding: 0 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .grid {
+    max-width: 1000px;
+    margin: 12px auto 60px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: box-shadow .15s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    box-shadow: 0 8px 20px rgba(139,92,246,0.12), 0 3px 8px rgba(236,72,153,0.08);
+    transform: translateY(-2px);
+  }
+  .card-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+  }
+  .card-body {
+    position: relative;
+    padding: 20px 18px 16px;
+  }
+  .card-body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--gradient);
+  }
+  .card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 10px;
+  }
+  .tag-pill {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  .tag-pill.cat-meal    { background: var(--meal-bg);    color: var(--meal-text); }
+  .tag-pill.cat-protein { background: var(--protein-bg); color: var(--protein-text); }
+  .tag-pill.cat-method  { background: var(--method-bg);  color: var(--method-text); }
+  .tag-pill.cat-other   { background: var(--other-bg);   color: var(--other-text); }
+  .tag-pill.cat-vibe    { background: var(--sunset-soft); color: var(--sunset-text); }
+  .empty {
+    max-width: 1000px;
+    margin: 60px auto;
+    text-align: center;
+    color: var(--muted);
+    padding: 0 24px;
+  }
+  /* modal */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border-radius: 16px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 26px 28px;
+    position: relative;
+  }
+  .modal h2 { margin-top: 0; }
+  .modal-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .modal .close-btn {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color .15s;
+  }
+  .modal .close-btn:hover {
+    color: var(--pink);
+  }
+  .modal-section {
+    margin-top: 16px;
+  }
+  .modal-section h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .modal-section ul, .modal-section ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .modal-section li { margin-bottom: 4px; }
+  .tag-remove {
+    border: none;
+    background: none;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 4px;
+    padding: 0;
+    line-height: 1;
+  }
+  .tag-remove:hover { opacity: 1; }
+  .add-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 6px;
+  }
+  .add-tag-row select,
+  .add-tag-row input[type="text"] {
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .add-tag-row input[type="text"] { flex: 1; min-width: 120px; }
+  .add-tag-row button {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient);
+    color: #fff;
+    cursor: pointer;
+  }
+  .delete-recipe-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .delete-recipe-btn:hover { background: #fee2e2; }
+  .form-field { margin-bottom: 14px; }
+  .form-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-field input[type="text"],
+  .form-field input[type="url"],
+  .form-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .form-field textarea { min-height: 90px; resize: vertical; }
+  .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .fetch-row { display: flex; gap: 8px; }
+  .fetch-row input { flex: 1; }
+  .fetch-row button, .form-actions button {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .form-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .form-actions .cancel-btn { background: var(--other-bg); color: var(--other-text); }
+  .macro-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .macro-grid input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
+  .checkbox-groups { display: flex; flex-direction: column; gap: 12px; }
+  .checkbox-group-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  .checkbox-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkbox-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--other-bg);
+    color: var(--other-text);
+    cursor: pointer;
+  }
+  .checkbox-options input { margin: 0; }
+  .fetch-status { font-size: 12px; margin-top: 6px; color: var(--muted); }
+  .source-link {
+    font-size: 13px;
+    color: var(--purple);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .source-link:hover { text-decoration: underline; }
+  .no-source {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .tag-summary {
+    max-width: 1000px;
+    margin: 20px auto 60px;
+    padding: 24px 24px 0;
+    border-top: 1px solid var(--border);
+  }
+  .tag-summary h3 {
+    margin: 0 0 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .tag-summary-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .summary-pill {
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+  .tag-summary-empty {
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍲 <span class="grad-text">Beata's Recipe Box</span></h1>
+  <div class="sub" id="tagline"></div>
+</header>
+
+<div class="controls">
+  <div class="search-row">
+    <input id="search" type="text" placeholder="Search by name, ingredient, or tag…">
+    <button type="button" class="add-recipe-btn" id="openAddFormBtn">+ Add Recipe</button>
+  </div>
+  <div class="tag-bar" id="tagBar"></div>
+</div>
+
+<div id="count"></div>
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="overlay" id="formOverlay">
+  <div class="modal" id="formModal"></div>
+</div>
+
+<div class="tag-summary">
+  <h3>Tag counts</h3>
+  <div class="tag-summary-list" id="tagSummary"></div>
+</div>
+
+<script>
+// ----------------------------------------------------------------------
+// RECIPE DATA
+// Add new recipes here as objects in this array. Each recipe:
+// {
+//   title: "Name of dish",
+//   tags: ["dinner", "chicken", "quick"],   // auto-extracted against the taxonomy below
+//   source: "Instagram" | "Facebook" | "Screenshot",
+//   sourceLink: "https://..." (optional, leave "" if none),
+//   image: "images/dish-name.jpg"  (optional — path to a photo sitting next to this
+//     HTML file in an /images folder, so it works once uploaded to GitHub Pages.
+//     Leave "" if there's no photo for this recipe.)
+//   ingredients: ["1 cup flour", "2 eggs", ...],
+//   steps: ["Preheat oven to 375F", "Mix flour and eggs", ...],
+//   macros: { calories: "1200 kcal", protein: "60g", carbs: "90g", fat: "40g" },
+//     // totals for the WHOLE BATCH the recipe makes, not per serving. Leave out
+//     // any field you don't have a number for, or omit "macros" entirely.
+//   notes: "" (optional personal notes)
+// }
+//
+// Import notes (for whoever's adding recipes):
+// - Tags are pulled automatically from the recipe content against TAG_CATEGORIES
+//   below, not typed in manually.
+// - Screenshots named the same with a/b/c suffixes (e.g. pasta-a.png, pasta-b.png)
+//   are the same recipe split across multiple images — combine into ONE entry.
+// ----------------------------------------------------------------------
+const SEED_RECIPES = [
+  {
+    title: "Slow Cooker High-Protein Cheesy Enchilada Chicken Pasta",
+    tags: ["dinner", "chicken", "slow-cooker", "healthy", "high-protein", "tried+liked"],
+    source: "Screenshot",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "1.6 kg chicken breast",
+      "2.1 kg passata",
+      "5 bell peppers",
+      "4 zucchinis",
+      "3–4 onions",
+      "2–3 carrots",
+      "Juice of ½ lime (or 1 tbsp vinegar)",
+      "2 tsp sweet paprika",
+      "1 tsp hot paprika",
+      "1 tsp cumin",
+      "1 tsp garlic powder",
+      "Salt & pepper",
+      "Cheese sauce: 900 g cottage cheese (3%), 120 g cheddar, 240 ml milk, salt & pepper",
+      "400–500 g pasta (undercooked)",
+      "150 g mozzarella, for topping"
+    ],
+    steps: [
+      "Add chicken, vegetables, spices, lime juice, and passata to the slow cooker. Cook on Low 5–6 hours (or High 3 hours).",
+      "Shred the chicken directly in the sauce.",
+      "Blend the cheese sauce ingredients (cottage cheese, cheddar, milk, salt & pepper) until smooth, then stir into the pot along with the pasta.",
+      "Transfer to a baking dish, top with mozzarella, and bake at 200°C for 10–15 minutes until golden."
+    ],
+    notes: "Macros as given: ~475 kcal, 40g protein, 13g fat, 28g carbs PER SERVING — the source didn't specify how many servings this batch makes, so a whole-batch total isn't calculated here. Let me know the serving count if you want it converted."
+  },
+  {
+    title: "Skyr & Raspberry Bake (Skyrnik z Malinami)",
+    tags: ["breakfast", "snack", "vegetarian", "healthy", "quick", "tried+liked"],
+    source: "Instagram",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "150 g natural skyr yogurt",
+      "2 eggs",
+      "20 g vanilla pudding powder",
+      "20 g rice flour",
+      "50 g raspberries",
+      "Sweetener to taste (original used 5 sweetener tablets)"
+    ],
+    steps: [
+      "Mix the wet ingredients together in a bowl.",
+      "Add the dry ingredients and combine.",
+      "Line a 14 x 14 cm pan with baking paper, or grease it.",
+      "Pour in the batter, top with raspberries.",
+      "Bake in a preheated oven at 170°C (fan) for 20–25 minutes.",
+      "Muffin tin variant: bake ~18 minutes using frozen fruit."
+    ],
+    notes: ""
+  },
+  {
+    title: "High-Protein Cottage Cheese Rolls",
+    tags: ["breakfast", "snack", "vegetarian", "meal-prep", "healthy", "high-protein", "tried+liked"],
+    source: "Screenshot",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "400 g cottage cheese (4% fat)",
+      "2 tbsp erythritol",
+      "1 tsp salt",
+      "270 g all-purpose flour",
+      "3 tsp baking powder",
+      "1–2 tsp water",
+      "Egg white, for brushing",
+      "Extra flour, for dusting"
+    ],
+    steps: [
+      "Preheat oven to 190°C and line a tray.",
+      "Blend cottage cheese, erythritol, salt, and water until smooth.",
+      "Mix flour and baking powder in a bowl, add the cottage cheese mixture, and stir into a sticky dough.",
+      "On a floured surface, shape into a disk and divide into 10 balls, dusting with flour.",
+      "Arrange on the tray and brush tops with egg white.",
+      "Bake 25 minutes until golden. Cool before serving."
+    ],
+    macros: { calories: "1450 kcal", protein: "90 g", carbs: "180 g", fat: "30 g" },
+    notes: "Makes 10 rolls. Per roll: 145 kcal, 9g protein, 18g carbs, 3g fat — totals above are for the whole batch of 10."
+  },
+  {
+    title: "Raspberry Pudding Buns (Bułeczki z Budyniem i Malinami)",
+    tags: ["breakfast", "dessert", "vegetarian", "healthy", "tried+liked"],
+    source: "Screenshot",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Dough: 200 g plant-based yogurt",
+      "Dough: 3 eggs",
+      "Dough: 40 g coconut flour",
+      "Dough: 40 g almond flour",
+      "Dough: 40 g sugar-free vanilla pudding powder",
+      "Dough: 10 g erythritol",
+      "Dough: ½ tsp baking powder",
+      "Dough (optional): ¼ tsp baking soda + a squeeze of lemon juice",
+      "Pudding filling: 250 ml plant-based milk",
+      "Pudding filling: 1 packet (35–40 g) sugar-free pudding powder",
+      "Pudding filling: sweetener, to taste",
+      "Crumble: 20 g coconut flour",
+      "Crumble: 20 g coconut oil (or butter)",
+      "Crumble: 20 g erythritol",
+      "Extras: 50–100 g raspberries"
+    ],
+    steps: [
+      "Heat the plant milk, whisk in pudding powder and sweetener, then let cool — this is your pudding filling.",
+      "Mix the crumble ingredients together and chill.",
+      "Mix all the dough ingredients together.",
+      "Shape the dough into small flat rounds on baking paper, making a small well in the center of each.",
+      "Fill each well with 1 tbsp pudding, raspberries, and crumble.",
+      "Bake at 180°C for 28–30 minutes, until golden."
+    ],
+    notes: ""
+  },
+  {
+    title: "Mini Fit Apple Tarts (Szarlotki)",
+    tags: ["breakfast", "snack", "dessert", "vegetarian", "healthy", "tried+liked"],
+    source: "Instagram",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "250 g curd cheese (twaróg)",
+      "150 g apples, chopped (weighed after chopping)",
+      "1 egg",
+      "20 g soft butter",
+      "~90 g flour (use rice flour for gluten-free)",
+      "1 flat tsp baking powder",
+      "1–2 tbsp sugar, erythritol, or xylitol",
+      "Powdered sugar or ground erythritol, for dusting (optional cinnamon)"
+    ],
+    steps: [
+      "Mix curd cheese, butter, egg, flour, baking powder, and sweetener together.",
+      "Add the chopped apples and mix again (or mix everything by hand).",
+      "Using two spoons, drop portions of dough onto a parchment-lined baking tray.",
+      "Bake at 180°C (top-bottom heat) for 25–30 minutes.",
+      "Once baked, dust with powdered sugar and, if you like, cinnamon."
+    ],
+    notes: "Great for coffee/tea, breakfast, or a lunchbox snack — kid-friendly."
+  },
+  {
+    title: "Hidden Veggie Baked Chicken Nuggets",
+    tags: ["lunch", "dinner", "snack", "chicken", "healthy", "tried+liked"],
+    source: "Screenshot",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "400 g chicken breast or thigh",
+      "1 carrot, peeled and chopped",
+      "1 small potato, peeled and chopped",
+      "1 small onion (optional)",
+      "1 egg",
+      "2 tbsp breadcrumbs or flour",
+      "1 tsp salt, ½ tsp garlic powder, ½ tsp paprika, pepper",
+      "Coating: ½ cup flour, 1 beaten egg, 1 cup panko, oil spray"
+    ],
+    steps: [
+      "Preheat oven to 200°C / 400°F.",
+      "Blend chicken, carrot, potato, onion, egg, and seasonings until sticky but not pasty.",
+      "Shape into nuggets (about 1 tbsp each).",
+      "Coat each: flour → egg → panko.",
+      "Place on a lined tray and spray with oil.",
+      "Bake 20–25 minutes, flipping halfway."
+    ],
+    notes: "Screenshot was cut off — if there were extra steps or a serving/storage note at the end, send that part over and I'll add it."
+  },
+  {
+    title: "Sesame Bread Rings (Obwarzanki)",
+    tags: ["bread", "vegetarian"],
+    source: "Facebook",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "400 g flour",
+      "200 ml milk (or half milk, half water)",
+      "20 g fresh yeast",
+      "100 ml oil",
+      "1 egg",
+      "1 tsp salt",
+      "2 tbsp sugar",
+      "50 g soft butter",
+      "Extra: 1 small egg (for egg wash), sesame seeds, nigella seeds"
+    ],
+    steps: [
+      "Warm the milk slightly until lukewarm.",
+      "Mix the warm milk with the yeast, sugar, and 2 tbsp of the flour. Let sit until the starter bubbles and activates.",
+      "Beat the egg with the salt.",
+      "Put the remaining flour in a bowl, make a well, pour in the starter and egg, and mix.",
+      "Knead into a dough, adding the oil as you go — it should turn out soft and smooth.",
+      "Shape into a ball, cover, and let rise until at least doubled in size.",
+      "Turn the risen dough onto a counter and stretch into a rectangle (about 30 x 40 cm), then spread with the soft butter.",
+      "Fold the dough into 3 (like a letter) and cut into 8 strips.",
+      "Roll each strip and pinch the ends together to form a ring.",
+      "Arrange on a baking tray and let rest about 20 minutes.",
+      "Preheat oven to 180°C with a small dish of hot water on the bottom rack.",
+      "Brush the rings with beaten egg, sprinkle with sesame and nigella seeds.",
+      "Bake 20 minutes at 180°C."
+    ],
+    notes: ""
+  },
+  {
+    title: "Fit Strawberry Buns (Fit Bułeczki)",
+    tags: ["breakfast", "snack", "vegetarian", "healthy", "high-protein", "quick"],
+    source: "Facebook",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "300 g semi-fat curd cheese (twaróg)",
+      "2 eggs",
+      "6 tbsp flour (~60 g, spelt used in original)",
+      "2 tbsp vanilla pudding powder (~30 g)",
+      "1 tsp baking powder",
+      "~100 g strawberries, fresh or frozen"
+    ],
+    steps: [
+      "Mix all ingredients except the strawberries into a smooth, uniform mass.",
+      "Shape into 5 buns and gently press strawberries into each.",
+      "Bake at 180°C for about 20 minutes, until browned.",
+      "Best served warm, but also works well for a lunchbox or post-workout snack."
+    ],
+    macros: { calories: "790 kcal", protein: "53.5 g" },
+    notes: "Per bun (makes 5): 158 kcal, 10.7g protein — totals above are for the whole batch. No added sugar."
+  },
+  {
+    title: "Cottage Cheese Pizza Crust (Pizza z Twarogu)",
+    tags: ["dinner", "lunch", "air-fryer", "healthy", "quick"],
+    source: "Screenshot",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Dough: 250 g curd cheese (twaróg), low-fat used in original",
+      "Dough: 1 egg",
+      "Dough: 60 g flour (spelt used in original)",
+      "Dough: ½ tsp salt",
+      "Dough: ½ tsp baking powder",
+      "Dough: 1 tsp oregano",
+      "Sauce: ketchup, tomato paste, salt, oregano, basil, pepper",
+      "Toppings: your choice — original used salami, yellow cheese, mozzarella, cherry tomatoes"
+    ],
+    steps: [
+      "Mix curd cheese, egg, flour, salt, baking powder, and oregano into a smooth mass.",
+      "Spread onto baking paper and shape into a circle — a wet spoon or wet hands work well.",
+      "Air-fry at 155°C for 15 minutes, flipping the crust partway through.",
+      "Raise the temperature to 175°C and cook a few minutes more until the crust is cooked through (keep an eye on it and adjust time/temp as needed).",
+      "Remove the crust, add sauce and toppings.",
+      "Bake another 8–10 minutes at 175°C."
+    ],
+    notes: "Made in an air fryer here, but the original was baked in a regular oven too."
+  },
+  {
+    title: "Baked Blueberry Protein Cheesecake (Serniczek na Redukcji)",
+    tags: ["dessert", "snack", "vegetarian", "air-fryer", "healthy", "high-protein", "indulgent", "quick"],
+    source: "Instagram",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Cheese mixture: 100 g low-fat curd cheese (twaróg)",
+      "Cheese mixture: 1 egg (~50 g)",
+      "Cheese mixture: 100 g vanilla skyr yogurt",
+      "Cheese mixture: 10 g vanilla pudding powder",
+      "Cheese mixture: 20 g spelt or wheat flour",
+      "Cheese mixture: ½ tsp baking powder",
+      "Cheese mixture: 20 g erythritol",
+      "Fruit: 60 g blueberries",
+      "Crumble: 10 g cold butter or oil",
+      "Crumble: 15 g spelt or wheat flour",
+      "Crumble: 15 g erythritol"
+    ],
+    steps: [
+      "Mix or blend all the cheese mixture ingredients thoroughly.",
+      "Pour into an oven-safe dish.",
+      "Arrange blueberries on top.",
+      "Mix the crumble ingredients until crumbly, and sprinkle over the top.",
+      "Bake 15 minutes in an air fryer (175°C), or 35–40 minutes in a regular oven (175°C).",
+      "Tastes great warm or cold."
+    ],
+    macros: { calories: "499 kcal", protein: "38.4 g", fat: "14.4 g", carbs: "53.1 g" },
+    notes: "This recipe makes a single serving, so the macros above are for the whole (one-serving) batch."
+  },
+  {
+    title: "Cottage Cheese Queso",
+    tags: ["snack", "vegetarian", "healthy", "high-protein", "quick"],
+    source: "Website (Skinnytaste)",
+    sourceLink: "https://www.skinnytaste.com/cottage-cheese-queso/",
+    image: "https://www.skinnytaste.com/wp-content/uploads/2025/06/Cottage-Cheese-Queso-Dip-19.jpg",
+    ingredients: [
+      "1 cup low-fat cottage cheese",
+      "1 tbsp taco seasoning",
+      "2 tbsp canned Rotel tomatoes, drained, plus 1 tbsp for garnish",
+      "1 clove garlic, minced",
+      "1 tbsp chopped pickled jalapeño, drained, for garnish",
+      "1/2 cup pepper jack cheese, freshly grated",
+      "1 tbsp chopped cilantro, for garnish",
+      "Tortilla chips, protein chips, or crudités, for serving"
+    ],
+    steps: [
+      "Blend the cottage cheese and taco seasoning in a small food processor or mini blender until completely smooth.",
+      "Heat a small skillet over medium heat and spray with oil. Sauté the tomatoes and garlic 1–2 minutes until fragrant. Add the cottage cheese mixture and stir until hot, 2–3 minutes. Remove from heat and stir in the pepper jack and pickled jalapeño until melted.",
+      "Transfer to a serving bowl, top with the remaining tomatoes and cilantro. Serve with chips or crudités."
+    ],
+    macros: { calories: "376 kcal", protein: "32 g", carbs: "12 g", fat: "20 g" },
+    notes: "Makes 4 servings (~1/4 cup each). Per serving: 94 kcal, 8g protein, 3g carbs, 5g fat."
+  },
+  {
+    title: "Air Fryer Potato Skins",
+    tags: ["snack", "pork", "air-fryer", "indulgent", "quick"],
+    source: "Website (Domestic Superhero)",
+    sourceLink: "https://domesticsuperhero.com/air-fryer-potato-skins/",
+    image: "https://domesticsuperhero.com/wp-content/uploads/2021/01/Air-Fryer-Potato-Skins-TEXT1.png",
+    ingredients: [
+      "4 large cooked russet potatoes, halved",
+      "1 tbsp olive oil",
+      "Salt and pepper, to taste",
+      "Dash ranch seasoning (optional but recommended)",
+      "1/2 cup freshly grated Colby jack or cheddar cheese",
+      "2 slices cooked bacon, chopped",
+      "Sour cream, for topping (optional)",
+      "Green onions, chopped, for topping (optional)"
+    ],
+    steps: [
+      "Scoop a little flesh out of each potato half to make a pocket, setting the scooped potato aside.",
+      "Brush the potato skins with olive oil, then season with salt, pepper, and ranch seasoning if using.",
+      "Air fry at 400°F for 5 minutes.",
+      "Fill pockets with cheese and bacon, close the basket, reduce to 350°F, and cook 2 minutes more (add another minute if needed).",
+      "Top with sour cream and green onions as desired."
+    ],
+    macros: { calories: "1584 kcal (calories only — no protein/carb/fat breakdown given)" },
+    notes: "Makes 8 skins. Only calories (198 kcal per skin) were stated on the source page — no protein/carb/fat figures were given, so those aren't included above."
+  },
+  {
+    title: "Baked Rice with Apples (Ryż Zapiekany z Jabłkami)",
+    tags: ["breakfast", "dessert", "vegetarian", "winter"],
+    source: "Website (aniagotuje.pl)",
+    sourceLink: "https://aniagotuje.pl/przepis/ryz-zapiekany-z-jablkami",
+    image: "https://cdn.aniagotuje.com/pictures/articles/2020/09/8007867-v-1500x1500.jpg",
+    ingredients: [
+      "300 g dry rice (e.g. Basmati)",
+      "500 ml milk or soy beverage",
+      "250 ml water",
+      "1 tbsp butter (e.g. clarified)",
+      "~1.5 kg apples (about 7 medium)",
+      "2 tbsp sugar (adjust to taste)",
+      "1/2 tsp cinnamon, plus more for dusting"
+    ],
+    steps: [
+      "Peel, halve, and core the apples, then grate them on the coarse side of a grater.",
+      "Cook the grated apples in a covered, heavy-bottomed pot on low heat for 15 minutes, stirring occasionally.",
+      "Uncover, add the cinnamon and sugar, and cook 5 more minutes, stirring, until excess water evaporates. Set aside.",
+      "Bring the milk and water to a boil in a separate pot.",
+      "Add the rice and a pinch of salt, reduce to a bare simmer, cover, and cook ~15 minutes until tender, stirring occasionally.",
+      "About 5 minutes before the rice is done, stir in the butter.",
+      "Grease a 22 x 30 cm baking dish. Spread most of the rice evenly on the bottom.",
+      "Spread all the caramelized apples over the rice layer.",
+      "Top with the remaining rice, patting down lightly.",
+      "Bake at 185°C for about 25 minutes.",
+      "Dust with cinnamon before serving."
+    ],
+    macros: { calories: "2562 kcal", carbs: "504 g", protein: "42 g", fat: "42 g" },
+    notes: "Author gives macros per 100g (122 kcal, 24g carbs, 2g protein, 2g fat) as approximate/self-calculated, not lab-verified. Totals above scale that to the full ~2100g batch (about 6+ generous portions)."
+  },
+  {
+    title: "Fiesta Chicken",
+    tags: ["dinner", "chicken", "make-ahead"],
+    source: "Website (Taste of Home)",
+    sourceLink: "https://www.tasteofhome.com/recipes/fiesta-chicken/",
+    image: "https://www.tasteofhome.com/wp-content/uploads/2017/09/Fiesta-Chicken_EXPS_H13x9BZ_7936_D06_23_3b.jpg",
+    ingredients: [
+      "1 can (10-3/4 oz) condensed cream of chicken soup, undiluted",
+      "1 can (10-3/4 oz) condensed cream of mushroom soup, undiluted",
+      "2 small tomatoes, chopped",
+      "1/3 cup picante sauce",
+      "1 medium green pepper, chopped",
+      "1 small onion, chopped",
+      "2–3 tsp chili powder",
+      "12 corn tortillas (6 inches), cut into 1-inch strips",
+      "3 cups cubed cooked chicken",
+      "1 cup shredded Colby cheese"
+    ],
+    steps: [
+      "Combine the soups, tomatoes, picante sauce, green pepper, onion, and chili powder in a large bowl.",
+      "In a greased 13x9-in. baking dish, layer half the tortilla strips, chicken, soup mixture, and cheese. Repeat layers.",
+      "Cover and bake at 350°F for 40–50 minutes until bubbly."
+    ],
+    macros: { calories: "2592 kcal", protein: "184 g", carbs: "224 g", fat: "112 g" },
+    notes: "Makes 8 servings. Per serving: 324 kcal, 23g protein, 28g carbs, 14g fat. Freezer-friendly — freeze unbaked, thaw partially overnight, then bake at 350°F until internal temp hits 165°F."
+  },
+  {
+    title: "Salsa Verde Chicken Casserole",
+    tags: ["dinner", "chicken", "quick"],
+    source: "Website (Taste of Home)",
+    sourceLink: "https://www.tasteofhome.com/recipes/salsa-verde-chicken-casserole/",
+    image: "https://www.tasteofhome.com/wp-content/uploads/2025/10/Salsa-Verde-Chicken-Casserole_EXPS_TOHVP25_164054_MF_08_12_1.jpg",
+    ingredients: [
+      "2 cups shredded rotisserie chicken",
+      "1 cup sour cream",
+      "1 1/2 cups salsa verde, divided",
+      "8 corn tortillas (6 inches)",
+      "2 cups chopped tomatoes",
+      "1/4 cup minced fresh cilantro",
+      "2 cups shredded Monterey Jack cheese",
+      "Optional: extra salsa verde, avocado, green onions, cilantro"
+    ],
+    steps: [
+      "Combine chicken, sour cream, and 3/4 cup salsa verde in a bowl. Spread 1/4 cup salsa on the bottom of a greased 8-in. square baking dish.",
+      "Layer half the tortillas, chicken mixture, half the tomatoes, all the cilantro, and half the cheese. Repeat layers.",
+      "Bake uncovered at 400°F for 20–25 minutes until bubbly. Serve with remaining salsa and toppings."
+    ],
+    macros: { calories: "2400 kcal", protein: "156 g", carbs: "132 g", fat: "138 g" },
+    notes: "Makes 6 servings. Per serving: 400 kcal, 26g protein, 22g carbs, 23g fat."
+  },
+  {
+    title: "Southwestern Casserole",
+    tags: ["dinner", "beef", "make-ahead"],
+    source: "Website (Taste of Home)",
+    sourceLink: "https://www.tasteofhome.com/recipes/southwestern-casserole/",
+    image: "https://www.tasteofhome.com/wp-content/uploads/2025/02/Southwestern-Casserole_EXPS_FT25_15969_EC_0212_1.jpg",
+    ingredients: [
+      "2 cups (8 oz) uncooked elbow macaroni",
+      "2 lbs ground beef",
+      "1 large onion, chopped",
+      "2 garlic cloves, minced",
+      "2 cans (14.5 oz each) diced tomatoes, undrained",
+      "1 can (16 oz) kidney beans, rinsed and drained",
+      "1 can (6 oz) tomato paste",
+      "1 can (4 oz) chopped green chiles, drained",
+      "1 1/2 tsp salt",
+      "1 tsp chili powder",
+      "1/2 tsp ground cumin",
+      "1/2 tsp pepper",
+      "2 cups shredded Monterey Jack cheese",
+      "2 jalapeño peppers, sliced"
+    ],
+    steps: [
+      "Cook the macaroni according to package directions.",
+      "Meanwhile, cook the beef and onion until the meat is no longer pink; add garlic and cook 1 minute more. Drain.",
+      "Stir in the tomatoes, kidney beans, tomato paste, green chiles, salt, chili powder, cumin, and pepper. Bring to a boil, then simmer uncovered 10 minutes.",
+      "Drain the macaroni and stir into the beef mixture.",
+      "Divide between 2 greased 2-quart baking dishes. Top with cheese and jalapeños.",
+      "Cover and bake at 375°F for 30 minutes, then uncover and bake ~10 minutes more until bubbly.",
+      "Serve one casserole; cool and freeze the second for up to 3 months."
+    ],
+    macros: { calories: "3852 kcal", protein: "288 g", carbs: "276 g", fat: "180 g" },
+    notes: "Makes 2 casseroles, 6 servings each (12 total). Per 1-cup serving: 321 kcal, 24g protein, 23g carbs, 15g fat. Totals above cover both casseroles combined."
+  },
+  {
+    title: "Blueberry Cottage Cheese Breakfast Bake",
+    tags: ["breakfast", "vegetarian", "healthy", "high-protein"],
+    source: "Website (Frosty Recipes)",
+    sourceLink: "https://www.frostyrecipes.com/blueberry-cottage-cheese-breakfast-bake/",
+    image: "https://www.frostyrecipes.com/wp-content/uploads/2025/06/serving-blueberry-bake.webp",
+    ingredients: [
+      "2 cups cottage cheese",
+      "2 cups fresh blueberries",
+      "3 large eggs",
+      "1/2 cup almond flour (or gluten-free flour)",
+      "1/4 cup honey or maple syrup",
+      "1 tsp vanilla extract",
+      "1 tsp baking powder",
+      "1/2 tsp cinnamon"
+    ],
+    steps: [
+      "Preheat oven to 350°F and lightly grease a 9x9-inch baking dish.",
+      "Combine cottage cheese, eggs, honey/maple syrup, vanilla, baking powder, and cinnamon in a large bowl until well combined.",
+      "Gently fold in the almond flour and blueberries.",
+      "Pour into the prepared dish, spreading evenly.",
+      "Bake 30–35 minutes until set and lightly golden.",
+      "Cool a few minutes before slicing. Serve warm or at room temperature."
+    ],
+    macros: { calories: "1080–1440 kcal (range, see notes)", protein: "66–88 g", carbs: "72–96 g", fat: "54–72 g" },
+    notes: "Yields 6–8 slices; per slice: 180 kcal, 11g protein, 12g carbs, 9g fat. Batch totals above are a range since the exact slice count (6 vs 8) isn't fixed."
+  },
+  {
+    title: "Fit Buttermilk Muffins (Fit Muffinki na Maślance)",
+    tags: ["breakfast", "snack", "vegetarian", "healthy", "quick"],
+    source: "Website (drlifestyle.pl)",
+    sourceLink: "https://drlifestyle.pl/przepisy/fit-muffinki-na-maslance-prosty-przepis-na-domowe-babeczki/",
+    image: "https://drlifestyle.pl/wp-content/uploads/2023/04/muffiny-miniatura.jpg",
+    ingredients: [
+      "240 ml buttermilk",
+      "2 eggs",
+      "60 g rapeseed or olive oil",
+      "250 g spelt flour",
+      "1 tsp baking powder",
+      "1/2 tsp baking soda",
+      "90 g erythritol",
+      "1 small apple, peeled and diced",
+      "Vanilla flavoring, to taste"
+    ],
+    steps: [
+      "Preheat oven to 180°C (top-bottom heat) and let eggs/buttermilk come to room temperature beforehand.",
+      "In one bowl, mix the wet ingredients: eggs, buttermilk, oil, and vanilla.",
+      "In another bowl, mix the dry ingredients: sifted flour, baking powder, baking soda, and erythritol.",
+      "Combine wet and dry ingredients, stirring only until combined, then fold in the diced apple.",
+      "Fill muffin molds about 3/4 full and bake 20 minutes.",
+      "Dust with powdered sugar once cooled, and store covered."
+    ],
+    macros: { calories: "1677 kcal", protein: "57.8 g", carbs: "171.5 g", fat: "79.6 g" },
+    notes: "Macros are for the whole batch as stated on the source page (makes roughly 16 muffins using silicone molds — count varies with how full you fill them)."
+  },
+  {
+    title: "3-Ingredient Cottage Cheese Egg Muffins",
+    tags: ["breakfast", "snack", "vegetarian", "meal-prep", "healthy", "high-protein", "quick"],
+    source: "Website (Kirbie's Cravings)",
+    sourceLink: "https://kirbiecravings.com/3-ingredient-cottage-cheese-egg-muffins/",
+    image: "https://kirbiecravings.com/wp-content/uploads/2025/06/3-ingredient-cottage-cheese-egg-bites-muffins-2.jpg",
+    ingredients: [
+      "8 large eggs",
+      "1 cup (246 g) cottage cheese",
+      "1/4 tsp salt, or to taste"
+    ],
+    steps: [
+      "Preheat oven to 325°F. Use a silicone muffin pan, or grease/line a metal one well.",
+      "Blend the eggs, cottage cheese, and salt until smooth. Stir in any mix-ins now, if using.",
+      "Pour into muffin cavities, filling about 7/8 full.",
+      "Bake 20–25 minutes until edges are lightly browned and muffins are cooked through.",
+      "Cool slightly before removing from the pan. Best enjoyed warm; store leftovers in the fridge or freezer."
+    ],
+    macros: { calories: "770 kcal", protein: "80 g", carbs: "20 g", fat: "40 g" },
+    notes: "Makes 10 muffins. Per muffin: 77 kcal, 8g protein, 2g carbs, 4g fat. Optional mix-ins (shredded cheese, chopped spinach/peppers, cooked bacon/sausage) aren't included in the core 3-ingredient macros."
+  },
+  {
+    title: "Sticky Sesame Chicken",
+    tags: ["dinner", "lunch", "chicken", "air-fryer", "healthy", "high-protein", "quick"],
+    source: "Website (MyProtein)",
+    sourceLink: "https://www.myprotein.com/thezone/recipe/sticky-sesame-chicken/",
+    image: "",
+    ingredients: [
+      "300 g chicken breast, diced",
+      "3 tbsp cornflour",
+      "2–3 spring onions, chopped",
+      "Marinade: 1 tsp sesame oil, 1 tbsp light soy sauce, 1 tsp grated garlic",
+      "Sauce: 2 tbsp honey, 2 tbsp light soy sauce, 2 tbsp ketchup, 1 tbsp sesame oil, 1 tbsp white rice vinegar",
+      "To serve (optional): sesame seeds, chopped chives, rice, edamame beans"
+    ],
+    steps: [
+      "Mix the diced chicken with the marinade ingredients and set aside 15 minutes.",
+      "Combine the sauce ingredients in a small bowl and set aside.",
+      "Toss the marinated chicken in cornflour, then air fry 10–12 minutes until cooked through and crispy, tossing halfway.",
+      "Heat the sauce in a pan until bubbling, then add the cooked chicken and spring onions, stirring to coat.",
+      "Serve with sesame seeds and chives, plus rice and edamame if desired."
+    ],
+    macros: { calories: "502 kcal", protein: "36 g", carbs: "60 g", fat: "13 g" },
+    notes: "The source page doesn't state how many servings these macros are based on — treat as approximate for the whole recipe. No usable photo was found on the source page (only a generic branded template graphic), so no image is included here."
+  },
+  {
+    title: "Crispy Egg Tortilla Bake",
+    tags: ["breakfast", "lunch", "vegetarian", "healthy", "high-protein", "quick"],
+    source: "Website (Food Dolls)",
+    sourceLink: "https://www.fooddolls.com/egg-tortilla-recipe/",
+    image: "https://www.fooddolls.com/wp-content/uploads/2025/11/Food-Dolls-12_17_25_tortillaeggbake_20731_Retouched_CROP_1200x1800px.jpg",
+    ingredients: [
+      "1 tortilla, 8–10 inches",
+      "3 large eggs",
+      "1/3 cup cottage cheese",
+      "Salt and pepper, to taste",
+      "Toppings (choose one set): diced tomatoes, green peppers, chopped spinach/arugula, mozzarella — OR tomatoes, kalamata olives, red onion, spinach, feta, mozzarella — OR sautéed shallots, spinach, feta, mozzarella"
+    ],
+    steps: [
+      "Preheat oven to 350°F. Grease a round baking dish about the same size as the tortilla.",
+      "Place the tortilla in the bottom of the dish to form the crust.",
+      "Whisk the eggs and cottage cheese together with a pinch of salt and pepper.",
+      "Pour the egg mixture evenly over the tortilla.",
+      "Add your chosen toppings, finishing with the cheese on top.",
+      "Bake 20–25 minutes until the eggs are set and the top is golden.",
+      "Cool a few minutes before slicing into wedges."
+    ],
+    macros: { calories: "948 kcal", protein: "72 g", carbs: "36 g", fat: "56 g" },
+    notes: "Makes 4 servings. Per serving: 237 kcal, 18g protein, 9g carbs, 14g fat (site's figure is an average across its three topping variations, so treat as approximate)."
+  },
+  {
+    title: "Chicken Taco Poblano Rice Bowls",
+    tags: ["dinner", "lunch", "chicken", "healthy", "high-protein", "quick"],
+    source: "Website (Skinnytaste)",
+    sourceLink: "https://www.skinnytaste.com/chicken-taco-poblano-rice-bowls/",
+    image: "https://www.skinnytaste.com/wp-content/uploads/2020/09/Chicken-Taco-Poblano-Rice-Bowls-9.jpg",
+    ingredients: [
+      "1 1/4 lbs boneless skinless chicken breast, cubed",
+      "2 tsp olive oil",
+      "1 medium red onion, diced",
+      "1/4 cup cilantro, minced, plus more for garnish",
+      "1 poblano pepper, seeded and diced",
+      "1 roma tomato, diced",
+      "1 lime",
+      "Taco seasoning: 1 tsp garlic powder, 1 tsp cumin, 1 tsp salt, 1/2 tsp chili powder, 1/2 tsp paprika, 1/2 tsp oregano",
+      "1 cup corn kernels (fresh or frozen)",
+      "3 cups cooked brown rice",
+      "1/4 cup cheddar-jack cheese",
+      "1/4 cup light sour cream or Greek yogurt (optional)"
+    ],
+    steps: [
+      "Mix the taco seasoning in a small bowl.",
+      "Make pico de gallo: combine 3 tbsp of the diced onion with tomato, cilantro, 2 tsp lime juice, and 1/4 tsp salt.",
+      "Cook the chicken in oil over medium-high heat 2–3 minutes until browning.",
+      "Add remaining onion, poblano, and taco seasoning; cook 2–3 minutes. Add 1/2 cup water and the corn, cook 1–2 minutes more.",
+      "Divide rice into 4 bowls, top with chicken mixture, cheese, pico de gallo, and sour cream if using."
+    ],
+    macros: { calories: "1900 kcal", protein: "162 g", carbs: "208 g", fat: "48 g" },
+    notes: "Makes 4 servings (1 bowl each). Per serving: 475 kcal, 40.5g protein, 52g carbs, 12g fat."
+  },
+  {
+    title: "Egg Roll in a Bowl (One-Skillet)",
+    tags: ["dinner", "lunch", "turkey", "one-pan", "healthy", "high-protein", "quick"],
+    source: "Website (Evolving Table)",
+    sourceLink: "https://www.evolvingtable.com/egg-roll-in-a-bowl-paleo-keto/",
+    image: "https://www.evolvingtable.com/wp-content/uploads/2026/06/Egg-Roll-in-a-Bowl-June-2026-1.jpg",
+    ingredients: [
+      "2 tbsp olive oil, divided",
+      "1 lb ground turkey",
+      "1 small sweet onion, diced",
+      "1 cup shredded carrots",
+      "3 garlic cloves, minced",
+      "1 tsp fresh ginger, minced",
+      "1/4 cup chicken broth",
+      "1 small head cabbage (~8 cups shredded)",
+      "3 tbsp soy sauce or tamari",
+      "1 tbsp rice vinegar",
+      "3/4 tsp salt",
+      "1/2 tsp black pepper",
+      "1 tsp toasted sesame oil",
+      "Optional for serving: rice, green onions, sesame seeds, sriracha mayo"
+    ],
+    steps: [
+      "Cook the turkey in 1 tbsp oil over medium heat about 5–6 minutes, until almost cooked through.",
+      "Push turkey aside, add onion and remaining oil, cook 3–4 minutes. Add carrots, garlic, and ginger, cook 2 minutes more.",
+      "Pour in the broth, scraping up any browned bits.",
+      "Add cabbage, soy sauce, vinegar, salt, and pepper. Stir, cover, and cook on medium-low 12–15 minutes until cabbage is tender. Stir in the sesame oil off heat.",
+      "Serve over rice if using, topped with green onions, sesame seeds, and sriracha mayo."
+    ],
+    macros: { calories: "1172 kcal", protein: "128 g", carbs: "84 g", fat: "44 g" },
+    notes: "Makes 4 servings. Per serving: 293 kcal, 32g protein, 21g carbs, 11g fat (calculated without optional rice/toppings)."
+  },
+  {
+    title: "Easy Cottage Cheese Pizza Crust",
+    tags: ["dinner", "lunch", "vegetarian", "quick"],
+    source: "Website (Yummy Toddler Food)",
+    sourceLink: "https://www.yummytoddlerfood.com/easy-cottage-cheese-pizza-crust/",
+    image: "https://www.yummytoddlerfood.com/wp-content/uploads/2025/04/Cottage-Cheese-Pizza-Crust-7-horiz.jpg",
+    ingredients: [
+      "2 cups self-rising flour (or all-purpose flour + 2 tsp baking powder)",
+      "1 cup full-fat cottage cheese",
+      "2 tbsp olive oil",
+      "1/2 tsp salt",
+      "1/3 cup pizza sauce",
+      "1 cup shredded mozzarella",
+      "Optional toppings: pepperoni, olives, precooked broccoli, etc."
+    ],
+    steps: [
+      "Preheat oven to 400°F and line a baking sheet with parchment.",
+      "Blend the cottage cheese briefly for a smoother consistency.",
+      "Combine flour, cottage cheese, salt, and olive oil in a bowl; bring together and knead lightly into a smooth dough (add a splash of water if too dry).",
+      "Split into 2 personal pizzas or leave whole for one large pizza; roll or press to about 1/2 inch thick.",
+      "Top with sauce, cheese, and toppings.",
+      "Bake 12–14 minutes until the cheese and crust edges are golden."
+    ],
+    macros: { calories: "1710 kcal", protein: "78 g", carbs: "198 g", fat: "66 g" },
+    notes: "Makes 6 servings. Per serving: 285 kcal, 13g protein, 33g carbs, 11g fat."
+  },
+  {
+    title: "Big Mac Bowl (Healthy Burger Bowl)",
+    tags: ["dinner", "lunch", "beef", "healthy", "quick"],
+    source: "Website (Little Healthy Life)",
+    sourceLink: "https://littlehealthylife.com/big-mac-bowl-healthy-burger-bowl-2009/",
+    image: "",
+    ingredients: [
+      "4 oz 96% lean ground beef",
+      "1/2 cup cooked cauliflower rice (or brown rice)",
+      "1 cup shredded romaine lettuce",
+      "1/4 cup cherry tomatoes, diced",
+      "1/4 cup dill pickles, sliced",
+      "2 tbsp reduced-fat shredded cheddar",
+      "1 tbsp diced onion",
+      "Sauce: 2 tbsp nonfat Greek yogurt, 1 tsp light mayo, 1 tsp mustard, 1 tbsp sugar-free ketchup, splash of pickle juice, pinch paprika, pinch garlic powder"
+    ],
+    steps: [
+      "Cook the beef in a skillet over medium heat 5–7 minutes, seasoning with salt, pepper, and garlic powder, until browned through.",
+      "Build the base in a bowl: cauliflower rice, lettuce, tomatoes, and diced onion.",
+      "Spoon the hot beef over the base.",
+      "Top with cheddar and pickles.",
+      "Mix the sauce ingredients until smooth and drizzle over the top."
+    ],
+    notes: "Makes 1 bowl. Source page gives no calorie/protein/carb/fat figures — only a rough estimate of ~3–4 Weight Watchers points per serving, so no macros field is included here. Heads up: this recipe site had some odd unrelated ad links on the page that looked spam-like, so I skipped pulling an image from it out of caution — the recipe content itself was intact and used as-is."
+  }
+];
+// ----------------------------------------------------------------------
+
+// Give every seed recipe a stable id derived from its title, so recipes
+// added/edited later (tag changes, deletions, new recipes) can be tracked
+// in the browser without touching this file.
+function slugify(str) {
+  return String(str).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+SEED_RECIPES.forEach(r => { if (!r.id) r.id = slugify(r.title); });
+
+// ------------------------------------------------------------------
+// LOCAL STORAGE LAYER
+// Recipes you add or edit right on the page (via "+ Add Recipe", the
+// tag editor, or the delete button) are saved in this browser's
+// localStorage — they DON'T change this HTML file itself. That means:
+//   - They show up every time you reopen this page in the SAME browser.
+//   - They will NOT show up on a different phone/laptop/browser until
+//     you re-export this file (see the "Export updated file" button)
+//     and either re-upload it to GitHub, or send it back for a proper
+//     merge into the permanent recipe list.
+// ------------------------------------------------------------------
+const LS_KEYS = {
+  userRecipes: "recipeBox_userRecipes",
+  deletedIds: "recipeBox_deletedIds",
+  tagOverrides: "recipeBox_tagOverrides"
+};
+function lsGet(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) { return fallback; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+
+let userRecipes = lsGet(LS_KEYS.userRecipes, []);
+let deletedIds = lsGet(LS_KEYS.deletedIds, []);
+let tagOverrides = lsGet(LS_KEYS.tagOverrides, {});
+
+function getAllRecipes() {
+  return [...SEED_RECIPES, ...userRecipes]
+    .filter(r => !deletedIds.includes(r.id))
+    .map(r => tagOverrides[r.id] ? { ...r, tags: tagOverrides[r.id] } : r);
+}
+
+function addUserRecipe(recipe) {
+  recipe.id = "user-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+  userRecipes.push(recipe);
+  lsSet(LS_KEYS.userRecipes, userRecipes);
+  return recipe.id;
+}
+
+function deleteRecipeById(id) {
+  if (id.startsWith("user-")) {
+    userRecipes = userRecipes.filter(r => r.id !== id);
+    lsSet(LS_KEYS.userRecipes, userRecipes);
+  } else {
+    if (!deletedIds.includes(id)) deletedIds.push(id);
+    lsSet(LS_KEYS.deletedIds, deletedIds);
+  }
+}
+
+function setRecipeTags(id, newTags) {
+  if (id.startsWith("user-")) {
+    const r = userRecipes.find(x => x.id === id);
+    if (r) { r.tags = newTags; lsSet(LS_KEYS.userRecipes, userRecipes); }
+  } else {
+    tagOverrides[id] = newTags;
+    lsSet(LS_KEYS.tagOverrides, tagOverrides);
+  }
+}
+
+// TAG TAXONOMY — controls color-coding only. Any tag not listed here
+// still works fine, it just renders as a neutral gray "other" tag.
+const TAG_CATEGORIES = {
+  meal:    ["breakfast", "lunch", "dinner", "snack", "dessert", "drink", "bread", "lunchbox"],
+  protein: ["vegetarian", "chicken", "beef", "fish", "pork", "turkey"],
+  method:  ["one-pan", "meal-prep", "make-ahead", "slow-cooker", "air-fryer", "no-cook"],
+  vibe:    ["quick", "family-recipe", "tried+liked", "socials-to-try", "summer", "winter", "indulgent", "healthy", "high-protein"]
+};
+function tagCategory(tag) {
+  const t = String(tag).toLowerCase();
+  for (const cat in TAG_CATEGORIES) {
+    if (TAG_CATEGORIES[cat].includes(t)) return cat;
+  }
+  return "other";
+}
+function tagPillHtml(tag) {
+  return `<span class="tag-pill cat-${tagCategory(tag)}">${escapeHtml(tag)}</span>`;
+}
+
+function macrosHtml(m) {
+  if (!m) return "";
+  const labels = [
+    ["calories", "Calories"],
+    ["protein", "Protein"],
+    ["carbs", "Carbs"],
+    ["fat", "Fat"]
+  ];
+  const rows = labels.filter(([key]) => m[key]).map(([key, label]) => `<li>${label}: ${escapeHtml(m[key])}</li>`);
+  if (rows.length === 0) return "";
+  return `<div class="modal-section"><h4>Macros (whole batch)</h4><ul>${rows.join("")}</ul></div>`;
+}
+
+// Rotating taglines — inviting you to cook, not describing the app.
+const TAGLINES = [
+  "Whisk happens. Let's cook anyway.",
+  "Stop scrolling. Start sautéing.",
+  "Your camera roll called — it wants to become dinner.",
+  "Lettuce turnip the beet and get cooking.",
+  "In this kitchen, we thyme travel from 'saved' to 'served.'",
+  "You had me at 'preheat oven to 375°F.'",
+  "Feed yourself, Seymour. Pick something already.",
+  "Cooking: because your takeout app is getting suspicious.",
+  "Reduce screen time. Increase simmer time.",
+  "This is your sign to actually make the pasta.",
+  "Grate minds cook alike.",
+  "Some people dream in color. You dream in recipe reels. Let's fix that."
+];
+function pickTagline(exclude) {
+  let choice;
+  do {
+    choice = TAGLINES[Math.floor(Math.random() * TAGLINES.length)];
+  } while (choice === exclude && TAGLINES.length > 1);
+  return choice;
+}
+function startTaglineRotation() {
+  const el = document.getElementById("tagline");
+  let current = pickTagline();
+  el.textContent = current;
+  setInterval(() => {
+    el.style.opacity = 0;
+    setTimeout(() => {
+      current = pickTagline(current);
+      el.textContent = current;
+      el.style.opacity = 1;
+    }, 400);
+  }, 6000);
+}
+
+let activeTags = new Set(); // multiple tags can be active at once
+let searchTerm = "";
+
+function allTags() {
+  const set = new Set();
+  getAllRecipes().forEach(r => r.tags.forEach(t => set.add(t)));
+  return Array.from(set).sort();
+}
+
+function renderTagBar() {
+  const bar = document.getElementById("tagBar");
+  bar.innerHTML = "";
+  if (activeTags.size > 0) {
+    const clear = document.createElement("div");
+    clear.className = "tag-chip";
+    clear.style.fontWeight = "700";
+    clear.textContent = "✕ Clear filters";
+    clear.onclick = () => {
+      activeTags.clear();
+      renderTagBar();
+      renderGrid();
+    };
+    bar.appendChild(clear);
+  }
+  allTags().forEach(tag => {
+    const chip = document.createElement("div");
+    chip.className = "tag-chip cat-" + tagCategory(tag) + (activeTags.has(tag) ? " active" : "");
+    chip.textContent = tag;
+    chip.onclick = () => {
+      if (activeTags.has(tag)) activeTags.delete(tag);
+      else activeTags.add(tag);
+      renderTagBar();
+      renderGrid();
+    };
+    bar.appendChild(chip);
+  });
+}
+
+function renderTagSummary() {
+  const container = document.getElementById("tagSummary");
+  const counts = {};
+  getAllRecipes().forEach(r => (r.tags || []).forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
+  const tags = Object.keys(counts).sort();
+
+  if (tags.length === 0) {
+    container.innerHTML = `<div class="tag-summary-empty">Tag counts will show up here once a few recipes are in.</div>`;
+    return;
+  }
+
+  container.innerHTML = tags.map(t =>
+    `<span class="tag-pill summary-pill cat-${tagCategory(t)}" data-tag="${escapeHtml(t)}">${escapeHtml(t)} · ${counts[t]}</span>`
+  ).join("");
+
+  container.querySelectorAll(".summary-pill").forEach(el => {
+    el.addEventListener("click", () => {
+      const tag = el.getAttribute("data-tag");
+      if (activeTags.has(tag)) activeTags.delete(tag);
+      else activeTags.add(tag);
+      renderTagBar();
+      renderGrid();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+function matchesSearch(r, term) {
+  if (!term) return true;
+  const hay = [r.title, r.notes, ...(r.tags||[]), ...(r.ingredients||[])].join(" ").toLowerCase();
+  return hay.includes(term.toLowerCase());
+}
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  const countEl = document.getElementById("count");
+  grid.innerHTML = "";
+
+  const all = getAllRecipes();
+
+  if (all.length === 0) {
+    countEl.textContent = "";
+    grid.innerHTML = `<div class="empty">No recipes yet — send some screenshots over, paste a link, or hit "+ Add Recipe" above.</div>`;
+    return;
+  }
+
+  const filtered = all.filter(r => {
+    const tagOk = activeTags.size === 0 || Array.from(activeTags).every(t => r.tags.includes(t));
+    return tagOk && matchesSearch(r, searchTerm);
+  });
+
+  countEl.textContent = `${filtered.length} recipe${filtered.length === 1 ? "" : "s"}`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty">No recipes match. Try clearing the search or tag filter.</div>`;
+    return;
+  }
+
+  filtered.forEach((r) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => openModal(r.id);
+    card.innerHTML = `
+      ${r.image ? `<img class="card-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : ""}
+      <div class="card-body">
+        <h3>${escapeHtml(r.title)}</h3>
+        <div class="card-tags">${r.tags.map(tagPillHtml).join("")}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function tagOptionGroupsHtml(currentTags) {
+  const labels = { meal: "Meal type", protein: "Protein", method: "Method", vibe: "Vibe" };
+  let html = "";
+  for (const cat in TAG_CATEGORIES) {
+    const opts = TAG_CATEGORIES[cat].filter(t => !currentTags.includes(t));
+    if (opts.length === 0) continue;
+    html += `<optgroup label="${labels[cat]}">` +
+      opts.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("") +
+      `</optgroup>`;
+  }
+  return html;
+}
+
+function openModal(id) {
+  const r = getAllRecipes().find(x => x.id === id);
+  if (!r) return;
+  const modal = document.getElementById("modal");
+  modal.innerHTML = `
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    ${r.image ? `<img class="modal-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : ""}
+    <h2>${escapeHtml(r.title)}</h2>
+    <div class="card-tags" id="modalTagList">
+      ${r.tags.map(t => `<span class="tag-pill cat-${tagCategory(t)}">${escapeHtml(t)}<button class="tag-remove" data-tag="${escapeHtml(t)}" title="Remove tag">×</button></span>`).join("")}
+    </div>
+    <div class="add-tag-row">
+      <select id="addTagSelect">
+        <option value="">+ add a tag…</option>
+        ${tagOptionGroupsHtml(r.tags)}
+      </select>
+      <input type="text" id="addTagCustom" placeholder="or type a custom tag">
+      <button type="button" id="addTagBtn">Add</button>
+    </div>
+    <div class="modal-section">
+      <h4>Ingredients</h4>
+      <ul>${(r.ingredients||[]).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+    </div>
+    <div class="modal-section">
+      <h4>Steps</h4>
+      <ol>${(r.steps||[]).map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
+    </div>
+    ${macrosHtml(r.macros)}
+    ${r.notes ? `<div class="modal-section"><h4>Notes</h4><div>${escapeHtml(r.notes)}</div></div>` : ""}
+    <div class="modal-section">
+      ${r.sourceLink
+        ? `<a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a>`
+        : `<div class="no-source">No original link on file${r.source ? ` (added from a ${escapeHtml(r.source.toLowerCase())})` : ""} — send me the post link if you find it and I'll add it.</div>`
+      }
+    </div>
+    <div class="modal-section">
+      <button type="button" class="delete-recipe-btn" id="deleteRecipeBtn">Delete this recipe</button>
+    </div>
+  `;
+
+  modal.querySelectorAll(".tag-remove").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const tag = btn.getAttribute("data-tag");
+      const fresh = getAllRecipes().find(x => x.id === id);
+      setRecipeTags(id, fresh.tags.filter(t => t !== tag));
+      openModal(id);
+      renderTagBar(); renderGrid(); renderTagSummary();
+    });
+  });
+
+  document.getElementById("addTagBtn").addEventListener("click", () => {
+    const select = document.getElementById("addTagSelect");
+    const custom = document.getElementById("addTagCustom");
+    const newTag = (custom.value.trim() || select.value || "").toLowerCase().trim();
+    if (!newTag) return;
+    const fresh = getAllRecipes().find(x => x.id === id);
+    if (!fresh.tags.includes(newTag)) {
+      setRecipeTags(id, [...fresh.tags, newTag]);
+    }
+    openModal(id);
+    renderTagBar(); renderGrid(); renderTagSummary();
+  });
+
+  document.getElementById("deleteRecipeBtn").addEventListener("click", () => {
+    if (confirm(`Delete "${r.title}"? This removes it from this browser's recipe box.`)) {
+      deleteRecipeById(id);
+      closeModal();
+      renderTagBar(); renderGrid(); renderTagSummary();
+    }
+  });
+
+  document.getElementById("overlay").classList.add("open");
+}
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
+}
+document.getElementById("overlay").addEventListener("click", (e) => {
+  if (e.target.id === "overlay") closeModal();
+});
+
+// ------------------------------------------------------------------
+// ADD RECIPE FORM — manual entry, plus a best-effort "auto-fill from
+// URL" engine. The auto-fill only works when a site publishes
+// structured Recipe data (schema.org JSON-LD), which most recipe
+// blogs do, but not all. When it can't find that data, or the fetch
+// itself fails (some sites block cross-origin requests), just fill
+// the form in by hand — or send the link back in a Cowork chat and
+// it'll get added properly there instead.
+// ------------------------------------------------------------------
+function checkboxGroupsHtml(selectedTags) {
+  const labels = { meal: "Meal type", protein: "Protein", method: "Method", vibe: "Vibe" };
+  return Object.keys(TAG_CATEGORIES).map(cat => `
+    <div>
+      <div class="checkbox-group-label">${labels[cat]}</div>
+      <div class="checkbox-options">
+        ${TAG_CATEGORIES[cat].map(t => `
+          <label>
+            <input type="checkbox" value="${escapeHtml(t)}" ${selectedTags.includes(t) ? "checked" : ""}>
+            ${escapeHtml(t)}
+          </label>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAddForm(prefill) {
+  prefill = prefill || {};
+  const modal = document.getElementById("formModal");
+  modal.innerHTML = `
+    <button class="close-btn" onclick="closeAddForm()">✕</button>
+    <h2>Add a Recipe</h2>
+    <div class="form-field">
+      <label>Recipe URL (optional — try auto-fill)</label>
+      <div class="fetch-row">
+        <input type="url" id="fUrl" placeholder="https://example.com/recipe" value="${escapeHtml(prefill.sourceLink || "")}">
+        <button type="button" id="fetchBtn">Try Auto-Fill</button>
+      </div>
+      <div class="fetch-status" id="fetchStatus"></div>
+      <div class="form-hint">Works on sites that publish structured recipe data — not guaranteed everywhere. If it doesn't work, fill in the fields by hand, or send the link back in chat.</div>
+    </div>
+    <div class="form-field">
+      <label>Title</label>
+      <input type="text" id="fTitle" value="${escapeHtml(prefill.title || "")}">
+    </div>
+    <div class="form-field">
+      <label>Image URL (optional)</label>
+      <input type="text" id="fImage" value="${escapeHtml(prefill.image || "")}">
+    </div>
+    <div class="form-field">
+      <label>Ingredients (one per line)</label>
+      <textarea id="fIngredients">${escapeHtml((prefill.ingredients || []).join("\n"))}</textarea>
+    </div>
+    <div class="form-field">
+      <label>Steps (one per line)</label>
+      <textarea id="fSteps">${escapeHtml((prefill.steps || []).join("\n"))}</textarea>
+    </div>
+    <div class="form-field">
+      <label>Macros for the whole batch (optional)</label>
+      <div class="macro-grid">
+        <input type="text" id="fCal" placeholder="Calories" value="${escapeHtml((prefill.macros && prefill.macros.calories) || "")}">
+        <input type="text" id="fProtein" placeholder="Protein" value="${escapeHtml((prefill.macros && prefill.macros.protein) || "")}">
+        <input type="text" id="fCarbs" placeholder="Carbs" value="${escapeHtml((prefill.macros && prefill.macros.carbs) || "")}">
+        <input type="text" id="fFat" placeholder="Fat" value="${escapeHtml((prefill.macros && prefill.macros.fat) || "")}">
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Notes (optional)</label>
+      <textarea id="fNotes" style="min-height:50px;">${escapeHtml(prefill.notes || "")}</textarea>
+    </div>
+    <div class="form-field">
+      <label>Tags</label>
+      <div class="checkbox-groups" id="fTagGroups">${checkboxGroupsHtml(prefill.tags || [])}</div>
+      <input type="text" id="fCustomTags" placeholder="Custom tags, comma-separated" style="margin-top:10px;">
+    </div>
+    <div class="form-actions">
+      <button type="button" id="saveRecipeBtn">Save Recipe</button>
+      <button type="button" class="cancel-btn" onclick="closeAddForm()">Cancel</button>
+    </div>
+  `;
+
+  document.getElementById("fetchBtn").addEventListener("click", async () => {
+    const url = document.getElementById("fUrl").value.trim();
+    const status = document.getElementById("fetchStatus");
+    if (!url) { status.textContent = "Enter a URL first."; return; }
+    status.textContent = "Fetching… this can take a few seconds.";
+    const result = await tryFetchRecipe(url);
+    if (result) {
+      status.textContent = "Got it — review everything below before saving.";
+      renderAddForm(result);
+    } else {
+      status.textContent = "Couldn't auto-fill from this page. Fill in the fields manually, or send the link back in chat.";
+    }
+  });
+
+  document.getElementById("saveRecipeBtn").addEventListener("click", () => {
+    const title = document.getElementById("fTitle").value.trim();
+    if (!title) { alert("Give the recipe a title first."); return; }
+    const checked = Array.from(document.querySelectorAll("#fTagGroups input:checked")).map(cb => cb.value);
+    const custom = document.getElementById("fCustomTags").value.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+    const tags = Array.from(new Set([...checked, ...custom]));
+    const macros = {};
+    const cal = document.getElementById("fCal").value.trim();
+    const protein = document.getElementById("fProtein").value.trim();
+    const carbs = document.getElementById("fCarbs").value.trim();
+    const fat = document.getElementById("fFat").value.trim();
+    if (cal) macros.calories = cal;
+    if (protein) macros.protein = protein;
+    if (carbs) macros.carbs = carbs;
+    if (fat) macros.fat = fat;
+
+    const recipe = {
+      title,
+      tags,
+      source: "Added on page",
+      sourceLink: document.getElementById("fUrl").value.trim(),
+      image: document.getElementById("fImage").value.trim(),
+      ingredients: document.getElementById("fIngredients").value.split("\n").map(s => s.trim()).filter(Boolean),
+      steps: document.getElementById("fSteps").value.split("\n").map(s => s.trim()).filter(Boolean),
+      notes: document.getElementById("fNotes").value.trim()
+    };
+    if (Object.keys(macros).length > 0) recipe.macros = macros;
+
+    addUserRecipe(recipe);
+    closeAddForm();
+    renderTagBar(); renderGrid(); renderTagSummary();
+  });
+}
+
+function openAddForm() {
+  renderAddForm();
+  document.getElementById("formOverlay").classList.add("open");
+}
+function closeAddForm() {
+  document.getElementById("formOverlay").classList.remove("open");
+}
+document.getElementById("formOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "formOverlay") closeAddForm();
+});
+document.getElementById("openAddFormBtn").addEventListener("click", openAddForm);
+
+async function tryFetchRecipe(url) {
+  const proxies = [
+    (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+    (u) => "https://corsproxy.io/?" + encodeURIComponent(u)
+  ];
+  for (const makeUrl of proxies) {
+    try {
+      const res = await fetch(makeUrl(url));
+      if (!res.ok) continue;
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      for (const script of scripts) {
+        let data;
+        try { data = JSON.parse(script.textContent); } catch (e) { continue; }
+        const items = Array.isArray(data) ? data : (data["@graph"] || [data]);
+        const recipe = items.find(x => x && (x["@type"] === "Recipe" || (Array.isArray(x["@type"]) && x["@type"].includes("Recipe"))));
+        if (recipe) return normalizeSchemaRecipe(recipe, url);
+      }
+    } catch (e) { /* try next proxy */ }
+  }
+  return null;
+}
+
+function normalizeSchemaRecipe(recipe, url) {
+  const title = recipe.name || "";
+  const ingredients = recipe.recipeIngredient || recipe.ingredients || [];
+  let steps = [];
+  if (Array.isArray(recipe.recipeInstructions)) {
+    steps = recipe.recipeInstructions.map(s => {
+      if (typeof s === "string") return s;
+      if (s.itemListElement) {
+        return (Array.isArray(s.itemListElement) ? s.itemListElement : [s.itemListElement]).map(i => i.text || i.name || "").join(" ");
+      }
+      return s.text || s.name || "";
+    }).filter(Boolean);
+  } else if (typeof recipe.recipeInstructions === "string") {
+    steps = recipe.recipeInstructions.split(/\n+/).filter(Boolean);
+  }
+  let image = "";
+  if (recipe.image) {
+    if (typeof recipe.image === "string") image = recipe.image;
+    else if (Array.isArray(recipe.image)) image = typeof recipe.image[0] === "string" ? recipe.image[0] : (recipe.image[0].url || "");
+    else if (recipe.image.url) image = recipe.image.url;
+  }
+  const macros = {};
+  if (recipe.nutrition) {
+    const n = recipe.nutrition;
+    if (n.calories) macros.calories = String(n.calories);
+    if (n.proteinContent) macros.protein = String(n.proteinContent);
+    if (n.carbohydrateContent) macros.carbs = String(n.carbohydrateContent);
+    if (n.fatContent) macros.fat = String(n.fatContent);
+  }
+  return { title, ingredients, steps, image, macros, sourceLink: url, tags: [], notes: "" };
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str == null ? "" : String(str);
+  return div.innerHTML;
+}
+
+document.getElementById("search").addEventListener("input", (e) => {
+  searchTerm = e.target.value;
+  renderGrid();
+});
+
+renderTagBar();
+renderGrid();
+renderTagSummary();
+startTaglineRotation();
+</script>
+
+</body>
+</html>
