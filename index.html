@@ -105,6 +105,28 @@
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(139,92,246,0.25);
   }
+  @media (max-width: 640px) {
+    .search-row { flex-wrap: wrap; }
+    .search-row input { flex-basis: 100%; }
+  }
+  .export-footer {
+    max-width: 1000px;
+    margin: 0 auto 50px;
+    padding: 24px 24px 0;
+    text-align: center;
+  }
+  .export-btn {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 20px;
+    color: var(--other-text);
+    background: var(--other-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .export-btn:hover { background: var(--other-solid); color: #fff; }
+  .export-footer .fetch-status { margin-top: 8px; }
   #search:focus {
     outline: none;
     border-color: var(--purple);
@@ -274,6 +296,19 @@
     padding-left: 20px;
   }
   .modal-section li { margin-bottom: 4px; }
+  .macro-disclaimer {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 6px;
+  }
+  .macro-source-ref {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
   .tag-remove {
     border: none;
     background: none;
@@ -388,11 +423,6 @@
     text-decoration: none;
   }
   .source-link:hover { text-decoration: underline; }
-  .no-source {
-    font-size: 13px;
-    color: var(--muted);
-    font-style: italic;
-  }
   .tag-summary {
     max-width: 1000px;
     margin: 20px auto 60px;
@@ -454,6 +484,11 @@
   <div class="tag-summary-list" id="tagSummary"></div>
 </div>
 
+<div class="export-footer">
+  <button type="button" class="export-btn" id="exportFileBtn" title="Bake everything added on this page into a fresh file to re-upload">⬇ Export Updated File</button>
+  <div class="fetch-status" id="exportStatus"></div>
+</div>
+
 <script>
 // ----------------------------------------------------------------------
 // RECIPE DATA
@@ -469,14 +504,19 @@
 //   ingredients: ["1 cup flour", "2 eggs", ...],
 //   steps: ["Preheat oven to 375F", "Mix flour and eggs", ...],
 //   macros: { calories: "1200 kcal", protein: "60g", carbs: "90g", fat: "40g" },
-//     // totals for the WHOLE BATCH the recipe makes, not per serving. Leave out
-//     // any field you don't have a number for, or omit "macros" entirely.
+//     // OPTIONAL and only used as a reference line — this is whatever the
+//     // original source claimed. The real "Macros" shown to the user is
+//     // now always calculated automatically from the ingredients list
+//     // above (see calculateRecipeMacros() below), so you never need to
+//     // fill this in by hand. Omit "macros" entirely if you don't have it.
 //   notes: "" (optional personal notes)
 // }
 //
 // Import notes (for whoever's adding recipes):
 // - Tags are pulled automatically from the recipe content against TAG_CATEGORIES
 //   below, not typed in manually.
+// - Macros are pulled automatically from the ingredients list, not typed in
+//   manually either — just make sure ingredient lines have real quantities.
 // - Screenshots named the same with a/b/c suffixes (e.g. pasta-a.png, pasta-b.png)
 //   are the same recipe split across multiple images — combine into ONE entry.
 // ----------------------------------------------------------------------
@@ -1162,6 +1202,30 @@ const SEED_RECIPES = [
       "Mix the sauce ingredients until smooth and drizzle over the top."
     ],
     notes: "Makes 1 bowl. Source page gives no calorie/protein/carb/fat figures — only a rough estimate of ~3–4 Weight Watchers points per serving, so no macros field is included here. Heads up: this recipe site had some odd unrelated ad links on the page that looked spam-like, so I skipped pulling an image from it out of caution — the recipe content itself was intact and used as-is."
+  },
+  {
+    title: "Karmelowiec (No-Bake Caramel Icebox Cake)",
+    tags: ["dessert", "vegetarian", "no-cook", "indulgent"],
+    source: "Photo (printed recipe card)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Petit beurre biscuits, white and cocoa (or another kind, as long as they lay flat and fit snugly in the pan)",
+      "2 packets cream/vanilla pudding powder",
+      "2 cups milk",
+      "1 tbsp butter",
+      "1 can krówka (toffee caramel spread, e.g. from Gostyń)",
+      "0.5 L heavy cream (36%), for whipping",
+      "250 g mascarpone cheese",
+      "Dark chocolate (or ready-made chocolate sprinkles), for topping"
+    ],
+    steps: [
+      "Make the pudding layer: bring 1 cup of milk with the butter to a boil. Remove from heat and stir in the pudding powder mixed into the second cup of milk, stirring vigorously to avoid lumps, then bring back to a boil (tip: a hand mixer on low speed works well here). Set aside to cool slightly.",
+      "Line a medium pan with baking paper. Arrange a layer of the white biscuits, then spread the still-warm pudding evenly over them (it spreads more easily warm than cold). Top with a layer of the cocoa biscuits, pressing lightly for an even surface.",
+      "Open the can of caramel and place it in boiling water to soften. Stir it smooth with a mixer beater, then spread the warm caramel evenly over the biscuits. Add a final layer of light biscuits on top of the caramel. Once fully cooled, refrigerate.",
+      "Whip the cream in a tall container, adding 1 tbsp powdered sugar partway through. Add the mascarpone and continue whipping until stiff. Spread over the chilled cake and top with grated dark chocolate or chocolate sprinkles. Chill for a few hours before serving."
+    ],
+    notes: "From a printed recipe card, no photo or original link available for this one."
   }
 ];
 // ----------------------------------------------------------------------
@@ -1256,17 +1320,522 @@ function tagPillHtml(tag) {
   return `<span class="tag-pill cat-${tagCategory(tag)}">${escapeHtml(tag)}</span>`;
 }
 
-function macrosHtml(m) {
-  if (!m) return "";
-  const labels = [
-    ["calories", "Calories"],
-    ["protein", "Protein"],
-    ["carbs", "Carbs"],
-    ["fat", "Fat"]
-  ];
-  const rows = labels.filter(([key]) => m[key]).map(([key, label]) => `<li>${label}: ${escapeHtml(m[key])}</li>`);
-  if (rows.length === 0) return "";
-  return `<div class="modal-section"><h4>Macros (whole batch)</h4><ul>${rows.join("")}</ul></div>`;
+// ------------------------------------------------------------------
+// AUTO MACRO CALCULATOR
+// Estimates whole-batch calories/protein/carbs/fat straight from a
+// recipe's ingredient list — no manual entry, and it runs for every
+// recipe (old ones and anything added later via the form, a URL, or
+// chat). It works by matching each ingredient against a small
+// built-in nutrition database, converting whatever unit is used
+// (cups, tbsp, oz, pieces, etc.) into grams, and summing it all up.
+//
+// This is an ESTIMATE, the same way a recipe blog's auto-calculated
+// nutrition panel is: it depends on matching ingredient wording to
+// the database and guessing at typical piece/cup weights. Seasonings
+// and "to taste" amounts are treated as negligible (~0). If a
+// recipe's original source stated its own official macros, those are
+// still shown underneath for comparison.
+// ------------------------------------------------------------------
+const NUTRITION_DB = [
+  ["chicken breast", [165,31,0,3.6], {}],
+  ["chicken thigh", [209,26,0,10.9], {}],
+  ["cooked chicken", [165,31,0,3.6], {}],
+  ["rotisserie chicken", [190,29,0,7.5], {}],
+  ["ground turkey", [149,20,0,7], {}],
+  ["ground beef 96", [137,22,0,5], {}],
+  ["lean ground beef", [155,21,0,7], {}],
+  ["ground beef", [254,17,0,20], {}],
+  ["bacon", [541,37,1.4,42], { slice: 8 }],
+  ["salami", [336,22,2,26], { slice: 10 }],
+  ["pepperoni", [494,19,4,44], { slice: 3 }],
+  ["egg white", [52,11,0.7,0.2], { piece: 33 }],
+  ["egg", [155,13,1.1,11], { piece: 50 }],
+  ["buttermilk", [40,3.3,4.8,1], { cup: 245, tbsp: 15 }],
+  ["plant-based milk", [40,1,5,1.5], { cup: 240, tbsp: 15 }],
+  ["plant milk", [40,1,5,1.5], { cup: 240, tbsp: 15 }],
+  ["soy beverage", [40,3,2,2], { cup: 240 }],
+  ["milk", [61,3.2,4.8,3.3], { cup: 240, tbsp: 15, tsp: 5 }],
+  ["heavy cream", [340,2.1,2.8,36], { cup: 238, tbsp: 15 }],
+  ["light sour cream", [120,3,6,7], { cup: 230, tbsp: 14 }],
+  ["reduced-fat sour cream", [120,3,6,7], { cup: 230, tbsp: 14 }],
+  ["sour cream", [198,2.4,4.6,19], { cup: 230, tbsp: 14 }],
+  ["greek yogurt", [73,10,3.9,2], { cup: 245, tbsp: 15 }],
+  ["skyr", [63,11,4,0.2], { cup: 245 }],
+  ["plant-based yogurt", [70,3,8,3], { cup: 245 }],
+  ["yogurt", [61,3.5,4.7,3.3], { cup: 245 }],
+  ["low-fat cottage cheese", [84,11,3.4,2.3], { cup: 226 }],
+  ["cottage cheese", [98,11,3.4,4.3], { cup: 226 }],
+  ["semi-fat curd cheese", [130,16,3.7,6], {}],
+  ["low-fat curd cheese", [98,17,3.5,1], {}],
+  ["curd cheese", [110,16,3.6,3.5], {}],
+  ["twarog", [110,16,3.6,3.5], {}],
+  ["mascarpone", [429,4.8,4.5,44], {}],
+  ["cream cheese", [342,6,4,34], { tbsp: 15 }],
+  ["cheddar-jack", [394,23,2.6,32], { cup: 113 }],
+  ["colby jack", [394,23,2.6,32], { cup: 113 }],
+  ["colby cheese", [394,23,2.6,32], { cup: 113 }],
+  ["cheddar", [403,25,1.3,33], { cup: 113 }],
+  ["pepper jack", [370,23,2,30], { cup: 113 }],
+  ["monterey jack", [373,24,0.7,30], { cup: 113 }],
+  ["mozzarella", [280,28,3.1,17], { cup: 113 }],
+  ["parmesan", [431,38,4.1,29], { cup: 100, tbsp: 5 }],
+  ["feta", [264,14,4,21], { cup: 150 }],
+  ["yellow cheese", [400,25,2,33], { cup: 113 }],
+  ["butter", [717,0.9,0.1,81], { cup: 227, tbsp: 14, tsp: 4.7 }],
+  ["olive oil", [884,0,0,100], { cup: 216, tbsp: 13.5, tsp: 4.5 }],
+  ["coconut oil", [892,0,0,99], { cup: 218, tbsp: 13.6, tsp: 4.5 }],
+  ["sesame oil", [884,0,0,100], { tbsp: 13.6, tsp: 4.5 }],
+  ["vegetable oil", [884,0,0,100], { cup: 218, tbsp: 13.6, tsp: 4.5 }],
+  ["rapeseed oil", [884,0,0,100], { cup: 218, tbsp: 13.6, tsp: 4.5 }],
+  ["oil", [884,0,0,100], { cup: 218, tbsp: 13.6, tsp: 4.5 }],
+  ["almond flour", [571,21,20,50], { cup: 96, tbsp: 6 }],
+  ["coconut flour", [400,20,60,14], { cup: 112, tbsp: 7 }],
+  ["rice flour", [366,6,80,1.4], { cup: 158, tbsp: 8 }],
+  ["spelt flour", [338,15,70,2.4], { cup: 120, tbsp: 7.5 }],
+  ["self-rising flour", [362,10,76,1], { cup: 125, tbsp: 8 }],
+  ["all-purpose flour", [364,10,76,1], { cup: 120, tbsp: 8 }],
+  ["flour", [364,10,76,1], { cup: 120, tbsp: 8, tsp: 2.6 }],
+  ["cornflour", [381,0.3,91,0.1], { tbsp: 8, tsp: 2.7 }],
+  ["cornstarch", [381,0.3,91,0.1], { tbsp: 8 }],
+  ["panko", [395,13,72,5], { cup: 50 }],
+  ["breadcrumbs", [395,13,72,5], { cup: 108, tbsp: 7 }],
+  ["powdered sugar", [389,0,100,0], { cup: 120, tbsp: 8 }],
+  ["brown sugar", [380,0,98,0], { cup: 220, tbsp: 14 }],
+  ["sugar", [387,0,100,0], { cup: 200, tbsp: 12.5, tsp: 4.2 }],
+  ["honey", [304,0.3,82,0], { cup: 340, tbsp: 21, tsp: 7 }],
+  ["maple syrup", [260,0,67,0.2], { cup: 315, tbsp: 20, tsp: 7 }],
+  ["erythritol", [0,0,0,0], { cup: 200, tbsp: 12 }],
+  ["xylitol", [267,0,100,0], { cup: 190, tbsp: 12 }],
+  ["sweetener", [0,0,0,0], {}],
+  ["vanilla pudding powder", [370,3,80,2], {}],
+  ["pudding powder", [370,3,80,2], {}],
+  ["dry rice", [365,7,80,0.7], { cup: 185 }],
+  ["cooked brown rice", [123,2.7,26,1], { cup: 195 }],
+  ["cooked rice", [130,2.7,28,0.3], { cup: 195 }],
+  ["brown rice", [123,2.7,26,1], { cup: 195 }],
+  ["rice", [130,2.7,28,0.3], { cup: 195 }],
+  ["elbow macaroni", [371,13,75,1.5], { cup: 100 }],
+  ["pasta", [371,13,75,1.5], { cup: 100 }],
+  ["sweet potato", [86,1.6,20,0.1], { piece: 130 }],
+  ["russet potato", [77,2,17,0.1], { piece: 170 }],
+  ["potato", [77,2,17,0.1], { piece: 170 }],
+  ["carrot", [41,0.9,10,0.2], { piece: 60 }],
+  ["poblano pepper", [20,1,4,0.2], { piece: 90 }],
+  ["bell pepper", [31,1,6,0.3], { piece: 120 }],
+  ["green pepper", [20,0.9,4.6,0.2], { piece: 120 }],
+  ["jalapeno", [29,0.9,6.5,0.4], { piece: 14 }],
+  ["jalapeño", [29,0.9,6.5,0.4], { piece: 14 }],
+  ["zucchini", [17,1.2,3.1,0.3], { piece: 200 }],
+  ["cabbage", [25,1.3,5.8,0.1], { cup: 89 }],
+  ["cherry tomatoes", [18,0.9,3.9,0.2], { cup: 149 }],
+  ["roma tomato", [18,0.9,3.9,0.2], { piece: 62 }],
+  ["tomato", [18,0.9,3.9,0.2], { piece: 123 }],
+  ["passata", [21,1.1,4,0.2], { cup: 245 }],
+  ["diced tomatoes", [18,0.9,4,0.2], { cup: 240 }],
+  ["tomato paste", [82,4.3,18.9,0.5], { cup: 262, tbsp: 16 }],
+  ["salsa verde", [24,0.9,5,0.2], { cup: 245 }],
+  ["salsa", [36,1.5,7,0.5], { cup: 245 }],
+  ["picante sauce", [24,0.8,5,0.1], { cup: 245 }],
+  ["ketchup", [112,1.3,27,0.2], { tbsp: 17, cup: 240 }],
+  ["mustard", [66,4,8,4], { tsp: 5, tbsp: 15 }],
+  ["light mayo", [200,1,4,18], { tbsp: 15 }],
+  ["mayo", [680,1,1,75], { tbsp: 15 }],
+  ["mayonnaise", [680,1,1,75], { tbsp: 15 }],
+  ["dill pickles", [11,0.3,2.3,0.2], { cup: 155 }],
+  ["pickles", [11,0.3,2.3,0.2], { cup: 155 }],
+  ["pickle juice", [5,0,1,0], { tbsp: 15 }],
+  ["spinach", [23,2.9,3.6,0.4], { cup: 30 }],
+  ["arugula", [25,2.6,3.7,0.7], { cup: 20 }],
+  ["romaine lettuce", [15,1.2,2.9,0.2], { cup: 47 }],
+  ["lettuce", [15,1.2,2.9,0.2], { cup: 47 }],
+  ["corn kernels", [86,3.3,19,1.2], { cup: 165 }],
+  ["corn", [86,3.3,19,1.2], { cup: 165 }],
+  ["kidney beans", [127,8.7,22.8,0.5], { cup: 177 }],
+  ["green chiles", [20,1,4,0.2], { cup: 113 }],
+  ["olives", [115,0.8,6,11], { cup: 134 }],
+  ["kalamata olives", [115,1,3,11], { cup: 134 }],
+  ["garlic", [149,6.4,33,0.5], { clove: 3 }],
+  ["ginger", [80,1.8,18,0.8], { tsp: 2 }],
+  ["lime", [30,0.7,11,0.2], { piece: 67 }],
+  ["lemon", [29,1.1,9.3,0.3], { piece: 58 }],
+  ["cilantro", [23,2.1,3.7,0.5], { cup: 16, tbsp: 1 }],
+  ["parsley", [36,3,6.3,0.8], { cup: 60, tbsp: 4 }],
+  ["basil", [23,3.2,2.7,0.6], { tsp: 2 }],
+  ["chives", [30,3.3,4.4,0.3], { tbsp: 3 }],
+  ["scallion", [32,1.8,7.3,0.2], { piece: 15 }],
+  ["spring onion", [32,1.8,7.3,0.2], { piece: 15 }],
+  ["green onion", [32,1.8,7.3,0.2], { piece: 15 }],
+  ["red onion", [40,1.1,9,0.1], { piece: 110 }],
+  ["sweet onion", [40,1.1,9,0.1], { piece: 110 }],
+  ["onion", [40,1.1,9,0.1], { piece: 110 }],
+  ["soy sauce", [53,8,4.9,0.6], { tbsp: 16, tsp: 5.3 }],
+  ["tamari", [53,8,4.9,0.6], { tbsp: 16 }],
+  ["rice vinegar", [18,0,0.4,0], { tbsp: 15, tsp: 5 }],
+  ["vinegar", [18,0,0.4,0], { tbsp: 15, tsp: 5 }],
+  ["sesame seeds", [573,18,23,50], { tbsp: 9, tsp: 3 }],
+  ["nigella seeds", [375,17,42,22], { tsp: 3 }],
+  ["blueberries", [57,0.7,14.5,0.3], { cup: 148 }],
+  ["raspberries", [52,1.2,12,0.7], { cup: 123 }],
+  ["strawberries", [32,0.7,7.7,0.3], { cup: 152 }],
+  ["apple", [52,0.3,14,0.2], { piece: 182 }],
+  ["banana", [89,1.1,23,0.3], { piece: 118 }],
+  ["avocado", [160,2,9,15], { piece: 150 }],
+  ["edamame beans", [122,11,10,5], { cup: 155 }],
+  ["dark chocolate", [546,4.9,61,31], { cup: 148 }],
+  ["chocolate sprinkles", [500,5,60,28], {}],
+  ["krowka", [420,2,70,15], { can: 400 }],
+  ["caramel", [382,2,77,7], { can: 400 }],
+  ["toffee", [420,2,70,15], { can: 400 }],
+  ["biscuits", [440,7,75,13], { piece: 8 }],
+  ["petit beurre", [440,7,75,13], { piece: 8 }],
+  ["cookies", [480,5,65,22], { piece: 15 }],
+  ["flour tortilla", [300,8,50,7], { piece: 45 }],
+  ["corn tortilla", [218,5.7,44,2.8], { piece: 24 }],
+  ["tortilla", [300,8,50,7], { piece: 45 }],
+  ["fresh yeast", [105,8,11,2], {}],
+  ["yeast", [325,40,41,7.6], { tsp: 3 }],
+  ["baking powder", [53,0,28,0], { tsp: 4.6 }],
+  ["baking soda", [0,0,0,0], { tsp: 4.6 }],
+  ["salt", [0,0,0,0], { tsp: 6 }],
+  ["pepper", [251,10,64,3.3], { tsp: 2.3 }],
+  ["black pepper", [251,10,64,3.3], { tsp: 2.3 }],
+  ["paprika", [282,14,54,13], { tsp: 2.3 }],
+  ["chili powder", [282,13,50,14], { tsp: 2.7 }],
+  ["cumin", [375,18,44,22], { tsp: 2.1 }],
+  ["oregano", [265,9,69,4.3], { tsp: 1 }],
+  ["cinnamon", [247,4,81,1.2], { tsp: 2.6 }],
+  ["garlic powder", [331,17,73,0.7], { tsp: 3.1 }],
+  ["onion powder", [341,10,79,1], { tsp: 2.4 }],
+  ["taco seasoning", [280,10,55,4], { tbsp: 8 }],
+  ["ranch seasoning", [350,5,45,15], { tsp: 3 }],
+  ["cooking spray", [0,0,0,0], {}],
+  ["oil spray", [0,0,0,0], {}],
+  ["vanilla extract", [288,0.1,12.7,0.1], { tsp: 4 }],
+  ["vanilla flavoring", [0,0,0,0], { tsp: 4 }],
+  ["condensed cream of chicken soup", [85,2,9,4.5], { can: 305 }],
+  ["condensed cream of mushroom soup", [85,2,9,4.5], { can: 305 }],
+  ["chicken broth", [4,0.5,0.3,0.1], { cup: 240, tbsp: 15 }],
+  ["vegetable broth", [3,0.3,0.5,0.1], { cup: 240 }],
+  ["pizza sauce", [29,1.3,6,0.4], { cup: 245, tbsp: 15 }],
+  ["water", [0,0,0,0], { cup: 240, tbsp: 15, tsp: 5 }],
+  ["broccoli", [34,2.8,7,0.4], { cup: 91 }]
+];
+
+function findFood(name) {
+  const n = name.toLowerCase();
+  let best = null, bestLen = 0;
+  for (const [key, per100, overrides] of NUTRITION_DB) {
+    if (n.includes(key) && key.length > bestLen) {
+      best = { key, per100, overrides };
+      bestLen = key.length;
+    }
+  }
+  return best;
+}
+
+const GENERIC_UNIT_GRAMS = {
+  g: 1, kg: 1000, ml: 1, l: 1000,
+  cup: 200, tbsp: 15, tsp: 5, oz: 28.35, lb: 453.6
+};
+
+function parseQtyToken(tok) {
+  if (tok == null) return null;
+  tok = tok.replace(/~/g, "").trim();
+  if (!tok) return null;
+  const range = tok.match(/^(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)$/);
+  if (range) return (parseFloat(range[1]) + parseFloat(range[2])) / 2;
+  const num = parseFloat(tok);
+  return isNaN(num) ? null : num;
+}
+
+function preNormalizeQty(text) {
+  let t = text;
+  const fracMap = { "½":0.5, "¼":0.25, "¾":0.75, "⅓":0.333, "⅔":0.667, "⅛":0.125 };
+  t = t.replace(/(\d+)\s*([½¼¾⅓⅔⅛])/g, (m, whole, f) => (parseFloat(whole) + fracMap[f]).toString());
+  t = t.replace(/([½¼¾⅓⅔⅛])/g, (m, f) => fracMap[f].toString());
+  t = t.replace(/(\d+)\s+(\d+)\/(\d+)/g, (m, w, num, d) => (parseInt(w) + parseInt(num) / parseInt(d)).toString());
+  t = t.replace(/(\d+)\/(\d+)/g, (m, num, d) => (parseInt(num) / parseInt(d)).toString());
+  return t;
+}
+
+const UNIT_WORDS = "kg|g|grams?|kilograms?|ml|l|liters?|cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?|pounds?|cloves?|slices?|cans?|packets?|packs?|pieces?";
+
+function splitCompoundLine(line) {
+  let t = line;
+  const labelMatch = t.match(/^([A-Za-z][A-Za-z \-]{0,30}):\s*/);
+  if (labelMatch) t = t.slice(labelMatch[0].length);
+  const startsWithDigit = /^[\d~½¼¾⅓⅔⅛]/.test(t.trim());
+  if (!startsWithDigit && t.includes(",")) {
+    return t.split(",").map(s => s.trim()).filter(Boolean);
+  }
+  return [t];
+}
+
+function normalizeUnit(u) {
+  if (!u) return "";
+  u = u.toLowerCase();
+  if (/^gram/.test(u)) return "g";
+  if (/^kilogram/.test(u)) return "kg";
+  if (/^liter/.test(u)) return "l";
+  if (/^cup/.test(u)) return "cup";
+  if (/^tablespoon/.test(u)) return "tbsp";
+  if (/^teaspoon/.test(u)) return "tsp";
+  if (/^ounce/.test(u)) return "oz";
+  if (/^pound/.test(u)) return "lb";
+  if (/^clove/.test(u)) return "clove";
+  if (/^slice/.test(u)) return "slice";
+  if (/^can/.test(u)) return "can";
+  if (/^packet|^pack/.test(u)) return "packet";
+  if (/^piece/.test(u)) return "piece";
+  return u.replace(/s$/, "");
+}
+
+function parseClause(clause) {
+  const t = preNormalizeQty(clause);
+  const stripped = t.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+  const re = new RegExp("^([\\d.\\-–]+)?\\s*(?:(" + UNIT_WORDS + ")\\b)?\\s*(.*)$", "i");
+  const m = stripped.match(re);
+  const qty = m ? parseQtyToken(m[1]) : null;
+  const unit = m ? normalizeUnit(m[2] || "") : "";
+  let name = (m ? m[3] : stripped).replace(/^of\s+/, "").trim();
+  return { qty, unit, name: name || stripped };
+}
+
+function calcClauseMacros(clause) {
+  const { qty, unit, name } = parseClause(clause);
+  const food = findFood(name) || findFood(clause);
+  if (!food) return { matched: false, macros: [0,0,0,0] };
+
+  let grams;
+  if (unit && food.overrides[unit] != null) {
+    grams = (qty != null ? qty : 1) * food.overrides[unit];
+  } else if (unit && GENERIC_UNIT_GRAMS[unit] != null) {
+    grams = (qty != null ? qty : 1) * GENERIC_UNIT_GRAMS[unit];
+  } else if (!unit && food.overrides.piece != null) {
+    grams = (qty != null ? qty : 1) * food.overrides.piece;
+  } else if (!unit && food.overrides.clove != null) {
+    grams = (qty != null ? qty : 1) * food.overrides.clove;
+  } else if (!unit && qty != null) {
+    grams = qty;
+  } else if (!unit && qty == null) {
+    grams = food.per100.every(v => v === 0) ? 0 : 2;
+  } else {
+    grams = 0;
+  }
+  const factor = grams / 100;
+  return { matched: true, macros: food.per100.map(v => v * factor) };
+}
+
+function calculateRecipeMacros(ingredients) {
+  let totals = [0, 0, 0, 0];
+  let matchedCount = 0, totalClauses = 0;
+  (ingredients || []).forEach(line => {
+    splitCompoundLine(line).forEach(clause => {
+      totalClauses++;
+      const r = calcClauseMacros(clause);
+      if (r.matched) {
+        matchedCount++;
+        for (let i = 0; i < 4; i++) totals[i] += r.macros[i];
+      }
+    });
+  });
+  return {
+    calories: Math.round(totals[0]),
+    protein: Math.round(totals[1] * 10) / 10,
+    carbs: Math.round(totals[2] * 10) / 10,
+    fat: Math.round(totals[3] * 10) / 10,
+    coverage: totalClauses ? Math.round(100 * matchedCount / totalClauses) : 0
+  };
+}
+
+// ------------------------------------------------------------------
+// METRIC CONVERTER
+// Appends metric equivalents next to any US/imperial units it finds
+// in ingredients or steps — °F, lb/oz, cups, quarts, and inch pan
+// sizes — so nothing needs to be rewritten by hand. Runs at display
+// time for every recipe, old and new. Skips temperatures that
+// already show both units (some recipes already list "200°C/400°F").
+// Cup conversions go to mL (an exact volume conversion) rather than
+// guessing a gram weight, since that varies by ingredient.
+// ------------------------------------------------------------------
+const METRIC_QTY_RE = "(\\d+-\\d+\\/\\d+|\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:\\.\\d+)?\\s*[-–]\\s*\\d+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?|[½¼¾⅓⅔⅛])";
+
+function metricQtyToNumber(str) {
+  const fracMap = { "½":0.5, "¼":0.25, "¾":0.75, "⅓":1/3, "⅔":2/3, "⅛":0.125 };
+  if (fracMap[str] !== undefined) return fracMap[str];
+  const hyphenMixed = str.match(/^(\d+)-(\d+)\/(\d+)$/);
+  if (hyphenMixed) return parseInt(hyphenMixed[1]) + parseInt(hyphenMixed[2]) / parseInt(hyphenMixed[3]);
+  const spaceMixed = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (spaceMixed) return parseInt(spaceMixed[1]) + parseInt(spaceMixed[2]) / parseInt(spaceMixed[3]);
+  const frac = str.match(/^(\d+)\/(\d+)$/);
+  if (frac) return parseInt(frac[1]) / parseInt(frac[2]);
+  const range = str.match(/^(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)$/);
+  if (range) return (parseFloat(range[1]) + parseFloat(range[2])) / 2;
+  const n = parseFloat(str);
+  return isNaN(n) ? null : n;
+}
+
+// ---- Double-check safety net ----
+// Every metric conversion below is computed via TWO independent formulas
+// (e.g. lb->g directly, and separately via lb->oz->g) and that agreement
+// is re-checked twice before the number is trusted. If the two methods
+// don't agree (which would catch a typo'd constant or a logic bug), the
+// conversion is silently skipped rather than showing a possibly-wrong
+// number — original text is left untouched in that case.
+function withinTolerance(a, b, relTol, absTol) {
+  return Math.abs(a - b) <= Math.max(absTol, relTol * Math.max(Math.abs(a), Math.abs(b)));
+}
+function doubleCheckedConversion(methodA, methodB, relTol, absTol) {
+  for (let pass = 0; pass < 2; pass++) {
+    const a = methodA();
+    const b = methodB();
+    if (a == null || b == null || isNaN(a) || isNaN(b) || !withinTolerance(a, b, relTol, absTol)) {
+      return null;
+    }
+  }
+  return methodA();
+}
+
+function convertTemps(text) {
+  if (/°C|\bC\)/.test(text)) return text;
+  return text.replace(/(\d+)\s*°?\s*F\b/g, (m, f) => {
+    const fNum = parseFloat(f);
+    // Method A: standard formula. Method B: equivalent but written differently
+    // (division by 1.8 instead of *5/9) so a typo in one path won't silently agree.
+    const verified = doubleCheckedConversion(
+      () => (fNum - 32) * 5 / 9,
+      () => (fNum - 32) / 1.8,
+      0.001, 0.05
+    );
+    if (verified == null) return m;
+    const c = Math.round(verified / 5) * 5;
+    return `${m} (${c}°C)`;
+  });
+}
+function convertPounds(text) {
+  const re = new RegExp(METRIC_QTY_RE + "\\s*(lbs?|pounds?)\\b", "gi");
+  return text.replace(re, (m, q) => {
+    const n = metricQtyToNumber(q);
+    if (n == null) return m;
+    // Method A: lb->g direct constant. Method B: lb->oz->g via a separate constant.
+    const grams = doubleCheckedConversion(
+      () => n * 453.592,
+      () => n * 16 * 28.3495,
+      0.01, 0.5
+    );
+    if (grams == null) return m;
+    const disp = grams >= 1000 ? (Math.round(grams / 10) / 100) + " kg" : Math.round(grams) + " g";
+    return `${m} (~${disp})`;
+  });
+}
+function convertOunces(text) {
+  const re = new RegExp(METRIC_QTY_RE + "\\s*(oz|ounces?)\\b", "gi");
+  return text.replace(re, (m, q) => {
+    const n = metricQtyToNumber(q);
+    if (n == null) return m;
+    // Method A: oz->g direct constant. Method B: oz->lb->g via a separate constant.
+    const grams = doubleCheckedConversion(
+      () => n * 28.3495,
+      () => (n / 16) * 453.592,
+      0.01, 0.5
+    );
+    if (grams == null) return m;
+    return `${m} (~${Math.round(grams)} g)`;
+  });
+}
+function convertCups(text) {
+  const re = new RegExp(METRIC_QTY_RE + "\\s*cups?\\b", "gi");
+  return text.replace(re, (m, q) => {
+    const n = metricQtyToNumber(q);
+    if (n == null) return m;
+    // Method A: kitchen-rounded 240 mL/cup (the friendlier convention we display).
+    // Method B: the precise US legal cup (236.588 mL) — generous tolerance since A
+    // is an intentional rounding of B, not a competing formula; still catches a
+    // gross typo (e.g. an accidental extra digit) instantly.
+    const ml = doubleCheckedConversion(
+      () => n * 240,
+      () => n * 236.588,
+      0.02, 1
+    );
+    if (ml == null) return m;
+    return `${m} (~${Math.round(n * 240)} mL)`;
+  });
+}
+function convertQuarts(text) {
+  const re = new RegExp(METRIC_QTY_RE + "-?\\s*quarts?\\b", "gi");
+  return text.replace(re, (m, q) => {
+    const n = metricQtyToNumber(q);
+    if (n == null) return m;
+    // Method A: quart->L direct constant. Method B: quart->cups->L via a separate constant.
+    const liters = doubleCheckedConversion(
+      () => n * 0.946353,
+      () => n * 4 * 0.236588,
+      0.01, 0.02
+    );
+    if (liters == null) return m;
+    return `${m} (~${Math.round(liters * 10) / 10} L)`;
+  });
+}
+function convertInches(text) {
+  return text.replace(
+    /(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)([\s-]*in(?:ch(?:es)?)?\.?)|(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*in(?:ch(?:es)?)?\.?|(\d+(?:\.\d+)?)[\s-]*in(?:ch(?:es)?)?\.?/gi,
+    (m, xa, xb, xsuffix, ra, rb, single) => {
+      // Method A: *2.54 direct. Method B: *25.4/10 (mm-first route) — same exact
+      // constant expressed a different way, so a typo in either still gets caught.
+      const inToCm = (val) => doubleCheckedConversion(
+        () => val * 2.54,
+        () => (val * 25.4) / 10,
+        0.001, 0.01
+      );
+      if (xa != null && xb != null) {
+        const ca = inToCm(parseFloat(xa)), cb = inToCm(parseFloat(xb));
+        if (ca == null || cb == null) return m;
+        return `${m} (${Math.round(ca)}x${Math.round(cb)} cm)`;
+      }
+      if (ra != null && rb != null) {
+        const ca = inToCm(parseFloat(ra)), cb = inToCm(parseFloat(rb));
+        if (ca == null || cb == null) return m;
+        return `${m} (${Math.round(ca)}–${Math.round(cb)} cm)`;
+      }
+      if (single != null) {
+        const cs = inToCm(parseFloat(single));
+        if (cs == null) return m;
+        return `${m} (${Math.round(cs)} cm)`;
+      }
+      return m;
+    }
+  );
+}
+function metricify(text) {
+  if (!text) return text;
+  let t = convertTemps(text);
+  t = convertPounds(t);
+  t = convertOunces(t);
+  t = convertCups(t);
+  t = convertQuarts(t);
+  t = convertInches(t);
+  return t;
+}
+
+function macrosHtml(r) {
+  const ingredients = r.ingredients || [];
+  if (ingredients.length === 0) return "";
+  const est = calculateRecipeMacros(ingredients);
+  const rows = `
+    <li>Calories: ${est.calories} kcal</li>
+    <li>Protein: ${est.protein} g</li>
+    <li>Carbs: ${est.carbs} g</li>
+    <li>Fat: ${est.fat} g</li>
+  `;
+  const sourceRef = r.macros ? `<div class="macro-source-ref">Source page states: ${
+    ["calories","protein","carbs","fat"].filter(k => r.macros[k]).map(k => `${k} ${escapeHtml(r.macros[k])}`).join(", ")
+  }</div>` : "";
+  return `<div class="modal-section">
+    <h4>Estimated Macros (whole batch)</h4>
+    <ul>${rows}</ul>
+    <div class="macro-disclaimer">Auto-calculated from the ingredient list (${est.coverage}% of ingredients matched to a nutrition estimate) — treat as approximate, not lab-verified.</div>
+    ${sourceRef}
+  </div>`;
 }
 
 // Rotating taglines — inviting you to cook, not describing the app.
@@ -1450,20 +2019,15 @@ function openModal(id) {
     </div>
     <div class="modal-section">
       <h4>Ingredients</h4>
-      <ul>${(r.ingredients||[]).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+      <ul>${(r.ingredients||[]).map(i => `<li>${escapeHtml(metricify(i))}</li>`).join("")}</ul>
     </div>
     <div class="modal-section">
       <h4>Steps</h4>
-      <ol>${(r.steps||[]).map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
+      <ol>${(r.steps||[]).map(s => `<li>${escapeHtml(metricify(s))}</li>`).join("")}</ol>
     </div>
-    ${macrosHtml(r.macros)}
+    ${macrosHtml(r)}
     ${r.notes ? `<div class="modal-section"><h4>Notes</h4><div>${escapeHtml(r.notes)}</div></div>` : ""}
-    <div class="modal-section">
-      ${r.sourceLink
-        ? `<a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a>`
-        : `<div class="no-source">No original link on file${r.source ? ` (added from a ${escapeHtml(r.source.toLowerCase())})` : ""} — send me the post link if you find it and I'll add it.</div>`
-      }
-    </div>
+    ${r.sourceLink ? `<div class="modal-section"><a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a></div>` : ""}
     <div class="modal-section">
       <button type="button" class="delete-recipe-btn" id="deleteRecipeBtn">Delete this recipe</button>
     </div>
@@ -1567,15 +2131,7 @@ function renderAddForm(prefill) {
       <label>Steps (one per line)</label>
       <textarea id="fSteps">${escapeHtml((prefill.steps || []).join("\n"))}</textarea>
     </div>
-    <div class="form-field">
-      <label>Macros for the whole batch (optional)</label>
-      <div class="macro-grid">
-        <input type="text" id="fCal" placeholder="Calories" value="${escapeHtml((prefill.macros && prefill.macros.calories) || "")}">
-        <input type="text" id="fProtein" placeholder="Protein" value="${escapeHtml((prefill.macros && prefill.macros.protein) || "")}">
-        <input type="text" id="fCarbs" placeholder="Carbs" value="${escapeHtml((prefill.macros && prefill.macros.carbs) || "")}">
-        <input type="text" id="fFat" placeholder="Fat" value="${escapeHtml((prefill.macros && prefill.macros.fat) || "")}">
-      </div>
-    </div>
+    <div class="form-hint" style="margin-bottom:14px;">Macros aren't entered by hand anymore — they're calculated automatically from whatever you put in the ingredients list above, once you save.</div>
     <div class="form-field">
       <label>Notes (optional)</label>
       <textarea id="fNotes" style="min-height:50px;">${escapeHtml(prefill.notes || "")}</textarea>
@@ -1611,15 +2167,6 @@ function renderAddForm(prefill) {
     const checked = Array.from(document.querySelectorAll("#fTagGroups input:checked")).map(cb => cb.value);
     const custom = document.getElementById("fCustomTags").value.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
     const tags = Array.from(new Set([...checked, ...custom]));
-    const macros = {};
-    const cal = document.getElementById("fCal").value.trim();
-    const protein = document.getElementById("fProtein").value.trim();
-    const carbs = document.getElementById("fCarbs").value.trim();
-    const fat = document.getElementById("fFat").value.trim();
-    if (cal) macros.calories = cal;
-    if (protein) macros.protein = protein;
-    if (carbs) macros.carbs = carbs;
-    if (fat) macros.fat = fat;
 
     const recipe = {
       title,
@@ -1631,7 +2178,9 @@ function renderAddForm(prefill) {
       steps: document.getElementById("fSteps").value.split("\n").map(s => s.trim()).filter(Boolean),
       notes: document.getElementById("fNotes").value.trim()
     };
-    if (Object.keys(macros).length > 0) recipe.macros = macros;
+    // If auto-fill pulled official macros from the source page, keep them
+    // around as a reference note alongside the auto-calculated estimate.
+    if (prefill.macros && Object.keys(prefill.macros).length > 0) recipe.macros = prefill.macros;
 
     addUserRecipe(recipe);
     closeAddForm();
@@ -1651,61 +2200,253 @@ document.getElementById("formOverlay").addEventListener("click", (e) => {
 });
 document.getElementById("openAddFormBtn").addEventListener("click", openAddForm);
 
-async function tryFetchRecipe(url) {
-  const proxies = [
-    (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
-    (u) => "https://corsproxy.io/?" + encodeURIComponent(u)
+// ------------------------------------------------------------------
+// URL AUTO-FILL ENGINE
+// Tries several strategies, in order, since recipe sites vary a lot:
+//   1. Fetch the page directly (works if the site allows cross-origin
+//      requests — rare, but free when it happens).
+//   2. Fall back through a few public CORS proxies.
+//   3. Look for schema.org Recipe data (JSON-LD) — most recipe blogs
+//      publish this, even ones with very different visual layouts.
+//      Handles nested @graph/mainEntity wrappers, HowTo sections,
+//      and HTML-flavored ingredient/instruction text.
+//   4. If no JSON-LD Recipe is found, fall back to scanning for
+//      common recipe-plugin markup (WP Recipe Maker, Tasty Recipes,
+//      Mediavine Create, and generic microdata itemprops).
+//   5. Fill any still-missing title/image from basic page meta tags.
+// None of this is guaranteed — some sites block all of it. When it
+// fails, fill the form in by hand, or send the link back in chat.
+// ------------------------------------------------------------------
+function stripHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.innerHTML = String(str);
+  return div.textContent.replace(/\s+/g, " ").trim();
+}
+
+async function fetchHtmlSomehow(url) {
+  const attempts = [
+    () => fetch(url),
+    () => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url)),
+    () => fetch("https://corsproxy.io/?url=" + encodeURIComponent(url)),
+    () => fetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url)),
+    () => fetch("https://r.jina.ai/" + url)
   ];
-  for (const makeUrl of proxies) {
+  for (const attempt of attempts) {
     try {
-      const res = await fetch(makeUrl(url));
-      if (!res.ok) continue;
-      const html = await res.text();
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-      for (const script of scripts) {
-        let data;
-        try { data = JSON.parse(script.textContent); } catch (e) { continue; }
-        const items = Array.isArray(data) ? data : (data["@graph"] || [data]);
-        const recipe = items.find(x => x && (x["@type"] === "Recipe" || (Array.isArray(x["@type"]) && x["@type"].includes("Recipe"))));
-        if (recipe) return normalizeSchemaRecipe(recipe, url);
-      }
-    } catch (e) { /* try next proxy */ }
+      const res = await attempt();
+      if (!res || !res.ok) continue;
+      const text = await res.text();
+      if (text && text.length > 200) return text;
+    } catch (e) { /* try the next approach */ }
   }
   return null;
 }
 
+function flattenInstructions(instr) {
+  if (!instr) return [];
+  if (typeof instr === "string") {
+    const div = document.createElement("div");
+    div.innerHTML = instr;
+    const items = Array.from(div.querySelectorAll("li, p")).map(el => el.textContent.trim()).filter(Boolean);
+    if (items.length > 0) return items;
+    return stripHtml(instr).split(/\n+/).map(s => s.trim()).filter(Boolean);
+  }
+  if (Array.isArray(instr)) {
+    let out = [];
+    instr.forEach(item => {
+      if (item == null) return;
+      if (typeof item === "string") { out.push(stripHtml(item)); return; }
+      if (item.itemListElement) { out = out.concat(flattenInstructions(item.itemListElement)); return; }
+      out.push(stripHtml(item.text || item.name || ""));
+    });
+    return out.filter(Boolean);
+  }
+  return [];
+}
+
+function findRecipesInJsonLd(doc) {
+  const found = [];
+  function collect(node) {
+    if (!node) return;
+    if (Array.isArray(node)) { node.forEach(collect); return; }
+    if (typeof node !== "object") return;
+    const type = node["@type"];
+    const isRecipe = type === "Recipe" || (Array.isArray(type) && type.includes("Recipe"));
+    if (isRecipe) found.push(node);
+    if (node["@graph"]) collect(node["@graph"]);
+    if (node.mainEntity) collect(node.mainEntity);
+    if (node.itemListElement) collect(node.itemListElement);
+  }
+  doc.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
+    try { collect(JSON.parse(script.textContent)); } catch (e) { /* skip malformed blocks */ }
+  });
+  // Prefer entries that actually list ingredients, in case a page has
+  // more than one Recipe block (e.g. a roundup post).
+  found.sort((a, b) => (b.recipeIngredient ? 1 : 0) - (a.recipeIngredient ? 1 : 0));
+  return found;
+}
+
 function normalizeSchemaRecipe(recipe, url) {
-  const title = recipe.name || "";
-  const ingredients = recipe.recipeIngredient || recipe.ingredients || [];
-  let steps = [];
-  if (Array.isArray(recipe.recipeInstructions)) {
-    steps = recipe.recipeInstructions.map(s => {
-      if (typeof s === "string") return s;
-      if (s.itemListElement) {
-        return (Array.isArray(s.itemListElement) ? s.itemListElement : [s.itemListElement]).map(i => i.text || i.name || "").join(" ");
-      }
-      return s.text || s.name || "";
-    }).filter(Boolean);
-  } else if (typeof recipe.recipeInstructions === "string") {
-    steps = recipe.recipeInstructions.split(/\n+/).filter(Boolean);
-  }
+  const title = stripHtml(recipe.name || "");
+
+  let ingredients = recipe.recipeIngredient || recipe.ingredients || [];
+  if (typeof ingredients === "string") ingredients = ingredients.split(/\n+/);
+  ingredients = ingredients.map(stripHtml).filter(Boolean);
+
+  const steps = flattenInstructions(recipe.recipeInstructions);
+
   let image = "";
-  if (recipe.image) {
-    if (typeof recipe.image === "string") image = recipe.image;
-    else if (Array.isArray(recipe.image)) image = typeof recipe.image[0] === "string" ? recipe.image[0] : (recipe.image[0].url || "");
-    else if (recipe.image.url) image = recipe.image.url;
+  const img = recipe.image;
+  if (img) {
+    if (typeof img === "string") image = img;
+    else if (Array.isArray(img)) image = typeof img[0] === "string" ? img[0] : ((img[0] && img[0].url) || "");
+    else if (img.url) image = img.url;
   }
+
   const macros = {};
   if (recipe.nutrition) {
     const n = recipe.nutrition;
-    if (n.calories) macros.calories = String(n.calories);
-    if (n.proteinContent) macros.protein = String(n.proteinContent);
-    if (n.carbohydrateContent) macros.carbs = String(n.carbohydrateContent);
-    if (n.fatContent) macros.fat = String(n.fatContent);
+    if (n.calories) macros.calories = stripHtml(String(n.calories));
+    if (n.proteinContent) macros.protein = stripHtml(String(n.proteinContent));
+    if (n.carbohydrateContent) macros.carbs = stripHtml(String(n.carbohydrateContent));
+    if (n.fatContent) macros.fat = stripHtml(String(n.fatContent));
   }
-  return { title, ingredients, steps, image, macros, sourceLink: url, tags: [], notes: "" };
+
+  let yieldVal = recipe.recipeYield || recipe.yield || "";
+  if (Array.isArray(yieldVal)) yieldVal = yieldVal.join(", ");
+  const notes = yieldVal ? `Yield/servings as listed on the source page: ${stripHtml(String(yieldVal))}.` : "";
+
+  return { title, ingredients, steps, image, macros, sourceLink: url, tags: [], notes };
 }
+
+// Fallback for sites with no JSON-LD — scan for markup from the most
+// common recipe-card plugins, plus generic schema.org microdata.
+function findRecipeViaCommonMarkup(doc) {
+  const candidates = [
+    { title: ".wprm-recipe-name", ing: ".wprm-recipe-ingredient", steps: ".wprm-recipe-instruction-text, .wprm-recipe-instruction-text p" },
+    { title: ".tasty-recipes-title", ing: ".tasty-recipes-ingredients-body li, .tasty-recipes-ingredients li", steps: ".tasty-recipes-instructions-body li, .tasty-recipes-instructions li" },
+    { title: ".mv-create-title", ing: ".mv-create-ingredients li", steps: ".mv-create-instructions li" },
+    { title: ".easyrecipe .ERSName", ing: ".easyrecipe .ingredient", steps: ".easyrecipe .instruction" },
+    { title: "[itemprop='name']", ing: "[itemprop='recipeIngredient'], [itemprop='ingredients']", steps: "[itemprop='recipeInstructions'] li" }
+  ];
+  for (const c of candidates) {
+    const ingEls = doc.querySelectorAll(c.ing);
+    if (ingEls.length === 0) continue;
+    const titleEl = doc.querySelector(c.title);
+    let stepEls = doc.querySelectorAll(c.steps);
+    let steps = Array.from(stepEls).map(e => e.textContent.trim()).filter(Boolean);
+    if (steps.length === 0) {
+      // Some plugins put all instructions as one block with no <li>s.
+      const block = doc.querySelector(c.steps.split(",")[0].replace(/ li.*$/, ""));
+      if (block) steps = flattenInstructions(block.innerHTML);
+    }
+    return {
+      title: titleEl ? stripHtml(titleEl.textContent) : "",
+      ingredients: Array.from(ingEls).map(e => stripHtml(e.textContent)).filter(Boolean),
+      steps,
+      image: "",
+      macros: {},
+      sourceLink: "",
+      tags: [],
+      notes: ""
+    };
+  }
+  return null;
+}
+
+function fillGapsFromMeta(doc, result) {
+  if (!result.title) {
+    const og = doc.querySelector('meta[property="og:title"]');
+    const t = doc.querySelector("title");
+    result.title = stripHtml((og && og.content) || (t && t.textContent) || "");
+  }
+  if (!result.image) {
+    const og = doc.querySelector('meta[property="og:image"]');
+    if (og && og.content) result.image = og.content;
+  }
+  return result;
+}
+
+async function tryFetchRecipe(url) {
+  const html = await fetchHtmlSomehow(url);
+  if (!html) return null;
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  let result = null;
+  const jsonLdMatches = findRecipesInJsonLd(doc);
+  if (jsonLdMatches.length > 0) {
+    result = normalizeSchemaRecipe(jsonLdMatches[0], url);
+  }
+
+  if (!result || result.ingredients.length === 0) {
+    const markupResult = findRecipeViaCommonMarkup(doc);
+    if (markupResult && markupResult.ingredients.length > 0) {
+      result = { ...markupResult, sourceLink: url };
+    }
+  }
+
+  if (!result) return null;
+  return fillGapsFromMeta(doc, result);
+}
+
+// ------------------------------------------------------------------
+// EXPORT — bakes everything currently in localStorage (recipes you
+// added on-page, tag edits, deletions) into a fresh copy of THIS
+// exact file, with an updated SEED_RECIPES list. Download it and
+// upload it to GitHub (overwriting index.html) to make your changes
+// permanent and visible on every device — not just this browser.
+//
+// This only works when the page is actually being served over
+// http(s) (e.g. your live GitHub Pages URL). It can't fetch its own
+// source when opened directly from a folder on your computer
+// (file://), because browsers block that for security reasons.
+// ------------------------------------------------------------------
+async function exportUpdatedFile() {
+  const status = document.getElementById("exportStatus");
+  status.textContent = "Building your updated file…";
+  try {
+    const res = await fetch(window.location.href, { cache: "no-store" });
+    if (!res.ok) throw new Error("Couldn't read the current page source.");
+    const html = await res.text();
+
+    const startMarker = "const SEED_RECIPES = [";
+    const startIdx = html.indexOf(startMarker);
+    const endOfArrayIdx = html.indexOf("\n];", startIdx); // start of the "];" line closing SEED_RECIPES
+    if (startIdx === -1 || endOfArrayIdx === -1) throw new Error("Couldn't find the recipe list in this page's source.");
+    const afterArrayLineIdx = html.indexOf("\n", endOfArrayIdx + 1) + 1; // just past the "];" line
+
+    const merged = getAllRecipes();
+    const before = html.slice(0, startIdx);
+    const after = html.slice(afterArrayLineIdx);
+    const output = before + "const SEED_RECIPES = " + JSON.stringify(merged, null, 2) + ";\n" + after;
+
+    const blob = new Blob([output], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "recipe-box.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    // Everything is now baked into the exported file, so clear local
+    // additions/edits in THIS browser to avoid duplicates once the
+    // new file is uploaded and reopened here.
+    localStorage.removeItem(LS_KEYS.userRecipes);
+    localStorage.removeItem(LS_KEYS.deletedIds);
+    localStorage.removeItem(LS_KEYS.tagOverrides);
+    userRecipes = [];
+    deletedIds = [];
+    tagOverrides = {};
+
+    status.textContent = "Downloaded! Upload this file to GitHub (overwrite index.html) to make it permanent everywhere.";
+  } catch (err) {
+    status.textContent = "Export failed — this only works when the page is hosted online (not opened from a local file). Error: " + err.message;
+  }
+}
+document.getElementById("exportFileBtn").addEventListener("click", exportUpdatedFile);
 
 function escapeHtml(str) {
   const div = document.createElement("div");
