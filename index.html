@@ -981,9 +981,15 @@
     white-space: nowrap;
     padding: 6px 8px;
   }
+  .planner-cell-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: 90px;
+  }
   .planner-cell {
     width: 100%;
-    min-width: 90px;
+    min-width: 60px;
     border: none;
     background: transparent;
     font-family: inherit;
@@ -993,6 +999,17 @@
     box-sizing: border-box;
   }
   .planner-cell:focus { background: var(--bg); outline: 1px solid var(--border); }
+  .planner-copy-btn {
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 2px 4px;
+    flex-shrink: 0;
+  }
+  .planner-copy-btn:hover { color: var(--teal); }
   .scale-row {
     display: flex;
     align-items: center;
@@ -1270,6 +1287,8 @@
 <div class="overlay" id="plannerPickOverlay">
   <div class="modal confirm-modal" id="plannerPickModal"></div>
 </div>
+
+<datalist id="recipeTitlesDatalist"></datalist>
 
 <div class="tag-summary">
   <h3>Tag counts</h3>
@@ -4745,6 +4764,7 @@ document.getElementById("shoppingListBtn").addEventListener("click", openShoppin
 // ------------------------------------------------------------------
 function plannerWeekBlockHtml(week, index) {
   const colorClass = `planner-color-${index % 6}`;
+  const hasNextWeek = !!mealPlanWeeks[index + 1];
   return `
     <div class="planner-week-block ${colorClass}">
       <div class="planner-week-header">
@@ -4758,7 +4778,18 @@ function plannerWeekBlockHtml(week, index) {
             ${PLANNER_MEALS.map(m => `
               <tr>
                 <th>${PLANNER_MEAL_LABELS[m]}</th>
-                ${PLANNER_DAYS.map(d => `<td><input type="text" class="planner-cell" data-week="${week.id}" data-day="${d}" data-meal="${m}" value="${escapeHtml(week.days[d][m] || "")}"></td>`).join("")}
+                ${PLANNER_DAYS.map((d, di) => {
+                  const value = week.days[d][m] || "";
+                  const isLastDay = di === PLANNER_DAYS.length - 1;
+                  const canCopy = !isLastDay || hasNextWeek;
+                  const showBtn = value.trim() && canCopy;
+                  return `<td>
+                    <div class="planner-cell-wrap">
+                      <input type="text" class="planner-cell" list="recipeTitlesDatalist" autocomplete="off" data-week="${week.id}" data-day="${d}" data-meal="${m}" value="${escapeHtml(value)}">
+                      ${canCopy ? `<button type="button" class="planner-copy-btn" data-week="${week.id}" data-day="${d}" data-meal="${m}" data-week-index="${index}" title="Copy to next day" style="${showBtn ? "" : "display:none;"}">→</button>` : ""}
+                    </div>
+                  </td>`;
+                }).join("")}
               </tr>
             `).join("")}
           </tbody>
@@ -4766,6 +4797,38 @@ function plannerWeekBlockHtml(week, index) {
       </div>
     </div>
   `;
+}
+function copyPlannerCellToNextDay(weekId, day, meal, weekIndex) {
+  const week = mealPlanWeeks.find(w => w.id === weekId);
+  if (!week) return;
+  const value = week.days[day][meal];
+  if (!value || !value.trim()) return;
+  const dayIdx = PLANNER_DAYS.indexOf(day);
+  let targetWeekId = weekId;
+  let targetDay;
+  if (dayIdx === PLANNER_DAYS.length - 1) {
+    const nextWeek = mealPlanWeeks[weekIndex + 1];
+    if (!nextWeek) return; // no next week to wrap into — button shouldn't even be visible here
+    targetWeekId = nextWeek.id;
+    targetDay = PLANNER_DAYS[0];
+  } else {
+    targetDay = PLANNER_DAYS[dayIdx + 1];
+  }
+  const targetWeek = mealPlanWeeks.find(w => w.id === targetWeekId);
+  const existing = targetWeek.days[targetDay][meal];
+  const doCopy = () => {
+    setMealPlanCell(targetWeekId, targetDay, meal, value);
+    renderMealPlanner();
+  };
+  if (existing && existing.trim()) {
+    showConfirm(
+      `${targetDay}'s ${PLANNER_MEAL_LABELS[meal].toLowerCase()} already has "${existing}" — replace it with "${value}"?`,
+      doCopy,
+      { confirmLabel: "Replace", cancelLabel: "Cancel", danger: true }
+    );
+  } else {
+    doCopy();
+  }
 }
 function renderMealPlanner() {
   const modal = document.getElementById("mealPlannerModal");
@@ -4796,11 +4859,30 @@ function renderMealPlanner() {
   modal.querySelectorAll(".planner-cell").forEach(input => {
     input.addEventListener("input", () => {
       setMealPlanCell(input.getAttribute("data-week"), input.getAttribute("data-day"), input.getAttribute("data-meal"), input.value);
+      const wrap = input.closest(".planner-cell-wrap");
+      const copyBtn = wrap ? wrap.querySelector(".planner-copy-btn") : null;
+      if (copyBtn) copyBtn.style.display = input.value.trim() ? "" : "none";
+    });
+  });
+  modal.querySelectorAll(".planner-copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      copyPlannerCellToNextDay(
+        btn.getAttribute("data-week"),
+        btn.getAttribute("data-day"),
+        btn.getAttribute("data-meal"),
+        parseInt(btn.getAttribute("data-week-index"), 10)
+      );
     });
   });
 }
+function renderRecipeTitlesDatalist() {
+  const datalist = document.getElementById("recipeTitlesDatalist");
+  const titles = getAllRecipes().map(r => r.title);
+  datalist.innerHTML = titles.map(t => `<option value="${escapeHtml(t)}"></option>`).join("");
+}
 function openMealPlanner() {
   if (mealPlanWeeks.length === 0) addMealPlanWeek();
+  renderRecipeTitlesDatalist();
   renderMealPlanner();
   document.getElementById("mealPlannerOverlay").classList.add("open");
 }
@@ -5742,6 +5824,7 @@ renderTagBar();
 renderGrid();
 renderTagSummary();
 updateShoppingListBtn();
+renderRecipeTitlesDatalist();
 startTaglineRotation();
 </script>
 
