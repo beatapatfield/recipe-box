@@ -12,7 +12,7 @@
     --muted: #7a7292;
     --purple: #8b5cf6;
     --pink: #ec4899;
-    --teal: #14b8a6;
+    --teal: #2dd4bf;
     --accent: #8b5cf6;
     --accent-soft: #f1e9ff;
     --border: #e9e3f5;
@@ -21,13 +21,26 @@
     /* tag category colors: meal type / protein / method / other */
     --meal-bg: #f1e9ff;   --meal-text: #6d28d9;   --meal-solid: #8b5cf6;
     --protein-bg: #fde7f3; --protein-text: #be185d; --protein-solid: #ec4899;
-    --method-bg: #e3f9f6; --method-text: #0f766e;  --method-solid: #14b8a6;
+    --method-bg: #e3f9f6; --method-text: #0f766e;  --method-solid: #2dd4bf;
     --other-bg: #eef0f4;  --other-text: #55596b;   --other-solid: #55596b;
     --sunset-soft: linear-gradient(120deg, #fef3e2, #fde3d3, #fbdbe0);
     --sunset-text: #9a3412;
     --sunset-solid: linear-gradient(120deg, #fbbf24, #f97316, #ef4444);
   }
   * { box-sizing: border-box; }
+  /* Global hover "pop" for clickable elements — layers on top of each
+     component's own hover styles (which handle background/color) by
+     only touching transform/filter, so nothing conflicts. */
+  button:not(:disabled), .tag-chip, .rating-clear-btn {
+    transition: transform .15s ease, filter .15s ease;
+  }
+  button:not(:disabled):hover, .tag-chip:hover, .rating-clear-btn:hover {
+    transform: translateY(-1px) scale(1.06);
+    filter: brightness(1.12) saturate(1.35);
+  }
+  button:not(:disabled):active, .tag-chip:active, .rating-clear-btn:active {
+    transform: translateY(0) scale(0.96);
+  }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -71,6 +84,10 @@
     margin-bottom: 18px;
     min-height: 18px;
     transition: opacity .4s ease;
+  }
+  .tagline-attr {
+    font-style: italic;
+    opacity: 0.75;
   }
   .controls {
     max-width: 1000px;
@@ -158,7 +175,7 @@
   }
   @media (max-width: 380px) {
     h1 { font-size: 20px; }
-    .idea-badge { font-size: 10px; padding: 3px 8px; }
+    .idea-badge { font-size: 20px; }
   }
   .export-footer {
     max-width: 1000px;
@@ -188,6 +205,152 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+  .ideas-filter {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .ideas-filter-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ideas-filter-btn.active {
+    background: var(--gradient);
+    border-color: transparent;
+    color: #fff;
+  }
+  .favorites-toggle-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  .favorites-toggle-btn.active {
+    background: linear-gradient(135deg, #fb7185, var(--pink));
+    border-color: transparent;
+    color: #fff;
+  }
+  .shopping-list-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .shopping-list-btn.has-items {
+    background: linear-gradient(135deg, #4ee0b0, #2dd4bf);
+    border-color: transparent;
+    color: #fff;
+  }
+  .ideas-filter-btn:hover,
+  .favorites-toggle-btn:hover,
+  .shopping-list-btn:hover {
+    background: linear-gradient(135deg, #7fcdc0, #3d9188);
+    border-color: transparent;
+    color: #fff;
+  }
+  .rating-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 2;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .card { position: relative; }
+  .fav-star-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    border-radius: 999px;
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .fav-star-btn.is-fav { color: var(--pink); }
+  .fav-star-btn:not(.is-fav) { color: #cbd5e1; }
+  .cook-count-badge {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 2;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .modal-fav-btn {
+    border: none;
+    background: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .modal-fav-btn.is-fav { color: var(--pink); }
+  .cook-tracker-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cook-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .cook-btn:hover { background: var(--bg); }
+  .cook-undo-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .cook-undo-btn:hover { color: var(--ink); background: var(--bg); }
+  .cook-count-text { font-size: 13px; color: var(--muted); }
   .tag-chip {
     padding: 6px 12px;
     border-radius: 999px;
@@ -229,34 +392,34 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     cursor: pointer;
-    transition: box-shadow .15s, transform .15s;
+    transition: box-shadow .2s ease, transform .2s ease;
     position: relative;
     overflow: hidden;
   }
   .card:hover {
-    box-shadow: 0 8px 20px rgba(139,92,246,0.12), 0 3px 8px rgba(236,72,153,0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgba(139,92,246,0.22), 0 6px 16px rgba(236,72,153,0.16), 0 2px 8px rgba(45,212,191,0.18);
+    transform: translateY(-5px) scale(1.015);
   }
+  .card:hover .card-img { filter: saturate(1.15) brightness(1.03); }
+  .card:hover .card-body::before { height: 8px; filter: saturate(1.3) brightness(1.1); }
   .card-img {
     width: 100%;
     height: 150px;
     object-fit: cover;
     display: block;
+    transition: filter .2s ease;
   }
   .idea-badge {
     position: absolute;
-    top: 10px;
+    top: 6px;
     right: 10px;
     z-index: 2;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .4px;
-    text-transform: uppercase;
-    color: white;
-    background: linear-gradient(135deg, #4facfe, #00c6ff);
-    box-shadow: 0 2px 6px rgba(0,120,200,0.35);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    color: #2f9bff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    cursor: default;
   }
   .card-body {
     position: relative;
@@ -268,6 +431,7 @@
     top: 0; left: 0; right: 0;
     height: 5px;
     background: var(--gradient);
+    transition: height .2s ease, filter .2s ease;
   }
   .card h3 {
     margin: 0 0 6px;
@@ -310,6 +474,20 @@
     z-index: 50;
   }
   .overlay.open { display: flex; }
+  #confirmOverlay { z-index: 60; } /* sits above the recipe/add-recipe modals */
+  .confirm-modal {
+    max-width: 380px;
+  }
+  .confirm-message {
+    margin: 0 0 20px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
   .modal {
     background: var(--card);
     border-radius: 16px;
@@ -488,6 +666,373 @@
     cursor: pointer;
   }
   .delete-recipe-btn:hover { background: #fee2e2; }
+  .print-recipe-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  .print-recipe-btn:hover { background: var(--bg); }
+  .add-to-list-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  .add-to-list-btn:hover { background: var(--bg); }
+  .add-to-planner-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  .add-to-planner-btn:hover { background: var(--bg); }
+  #plannerPickOverlay { z-index: 65; } /* sits above the recipe modal it's opened from */
+  .planner-pick-field { margin-bottom: 12px; }
+  .planner-pick-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .planner-pick-field select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .planner-pick-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .planner-pick-actions button { font-family: inherit; }
+  #confirmPlannerPickBtn {
+    border: none;
+    background: var(--gradient);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .modal-actions-row { display: flex; flex-wrap: wrap; gap: 0; }
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .rating-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-right: 2px; }
+  .rating-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rating-scale-label { font-size: 11px; color: var(--muted); font-weight: 700; }
+  .rating-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--purple), var(--pink), var(--teal));
+    cursor: pointer;
+  }
+  .rating-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+  }
+  .rating-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+  }
+  .rating-slider.unrated::-webkit-slider-thumb { border-color: var(--muted); }
+  .rating-slider.unrated::-moz-range-thumb { border-color: var(--muted); }
+  .rating-value-badge {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rating-value-badge.unrated { background: var(--border); color: var(--muted); font-weight: 700; font-size: 11px; }
+  .rating-clear-btn {
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    flex-shrink: 0;
+  }
+  .rating-clear-btn:hover { color: var(--ink); }
+  .personal-note-field {
+    width: 100%;
+    min-height: 60px;
+    font-family: inherit;
+    font-size: 13.5px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .shopping-modal { max-width: 480px; }
+  .shopping-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .shopping-header-actions { display: flex; gap: 8px; }
+  .shopping-header-actions button {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .shopping-header-actions button:hover { background: var(--bg); color: var(--ink); }
+  .shopping-group { margin-bottom: 16px; }
+  .shopping-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-bottom: 6px;
+  }
+  .shopping-group ul { list-style: none; margin: 0; padding: 0; }
+  .shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .shopping-item label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .shopping-item.checked label { color: var(--muted); text-decoration: line-through; }
+  .shopping-remove {
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+  .shopping-remove:hover { color: #b91c1c; }
+  .shopping-empty { color: var(--muted); font-size: 14px; padding: 10px 0; }
+
+  .planner-nav-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .planner-nav-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .planner-nav-btn:hover { background: var(--bg); color: var(--ink); }
+  .planner-modal { max-width: 920px; }
+  .planner-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .planner-header-actions { display: flex; gap: 8px; align-items: center; }
+  .planner-header-actions button {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--gradient);
+    color: #fff;
+    cursor: pointer;
+  }
+  .planner-header-actions button.secondary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--ink);
+  }
+  .planner-week-block {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .planner-week-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+  }
+  .planner-delete-week {
+    border: none;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .planner-delete-week:hover { background: rgba(255,255,255,0.45); }
+  .planner-color-0 .planner-week-header { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+  .planner-color-1 .planner-week-header { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+  .planner-color-2 .planner-week-header { background: linear-gradient(135deg, #f87171, #ef4444); }
+  .planner-color-3 .planner-week-header { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .planner-color-4 .planner-week-header { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  .planner-color-5 .planner-week-header { background: linear-gradient(135deg, #fb7185, #ec4899); }
+  .planner-table-wrap { overflow-x: auto; }
+  .planner-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .planner-table th, .planner-table td {
+    border: 1px solid var(--border);
+    padding: 4px;
+    text-align: left;
+  }
+  .planner-table thead th {
+    background: var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    padding: 6px 4px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .planner-table tbody th {
+    background: var(--bg);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+    padding: 6px 8px;
+  }
+  .planner-cell {
+    width: 100%;
+    min-width: 90px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    padding: 6px 4px;
+    color: var(--ink);
+    box-sizing: border-box;
+  }
+  .planner-cell:focus { background: var(--bg); outline: 1px solid var(--border); }
+  .scale-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .scale-label { font-size: 12px; color: var(--muted); font-weight: 700; margin-right: 4px; }
+  .scale-btn {
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .scale-btn.active {
+    background: var(--gradient);
+    border-color: transparent;
+    color: #fff;
+  }
+  .scale-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: -4px;
+    margin-bottom: 10px;
+  }
+  .dup-warning-box {
+    font-size: 12.5px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
   .form-field { margin-bottom: 14px; }
   .form-field label {
     display: block;
@@ -607,6 +1152,37 @@
     50% { transform: rotate(200deg) scale(1.15); }
     to { transform: rotate(360deg) scale(1); }
   }
+
+  /* ------------------------------------------------------------------
+     PRINT VIEW — when printing, only the open recipe modal should show
+     up, laid out as a clean single-page recipe card. Everything else
+     on the page (header, search/filters, grid, other overlay) is
+     hidden. Interactive-only controls inside the modal (close, scale
+     buttons, tag editor, delete/print buttons) are hidden too via
+     .no-print.
+  ------------------------------------------------------------------ */
+  @media print {
+    body * { visibility: hidden; }
+    .overlay.open, .overlay.open .modal, .overlay.open .modal * { visibility: visible; }
+    header, .controls, #count, .grid, .tag-summary, #formOverlay, #shoppingOverlay, #mealPlannerOverlay, #plannerPickOverlay { display: none !important; }
+    .overlay.open {
+      position: absolute;
+      inset: auto;
+      background: none;
+      display: block;
+      padding: 0;
+    }
+    .overlay.open .modal {
+      position: static;
+      max-width: 100%;
+      max-height: none;
+      overflow: visible;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+    }
+    .no-print { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -656,6 +1232,16 @@
     <button type="button" class="add-recipe-btn" id="openAddFormBtn">+ Add Recipe</button>
   </div>
   <div class="tag-bar" id="tagBar"></div>
+  <div class="ideas-filter" id="ideasFilter">
+    <button type="button" class="ideas-filter-btn active" data-mode="all">All</button>
+    <button type="button" class="ideas-filter-btn" data-mode="full">Full recipes</button>
+    <button type="button" class="ideas-filter-btn" data-mode="ideas">Ideas only</button>
+    <button type="button" class="favorites-toggle-btn" id="favoritesToggleBtn">♥ Favorites</button>
+    <button type="button" class="shopping-list-btn" id="shoppingListBtn">🛒 Shopping List</button>
+  </div>
+  <div class="planner-nav-row">
+    <button type="button" class="planner-nav-btn" id="openMealPlannerBtn">📅 Meal Planner</button>
+  </div>
 </div>
 
 <div id="count"></div>
@@ -667,6 +1253,22 @@
 
 <div class="overlay" id="formOverlay">
   <div class="modal" id="formModal"></div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm-modal" id="confirmModal"></div>
+</div>
+
+<div class="overlay" id="shoppingOverlay">
+  <div class="modal shopping-modal" id="shoppingModal"></div>
+</div>
+
+<div class="overlay" id="mealPlannerOverlay">
+  <div class="modal planner-modal" id="mealPlannerModal"></div>
+</div>
+
+<div class="overlay" id="plannerPickOverlay">
+  <div class="modal confirm-modal" id="plannerPickModal"></div>
 </div>
 
 <div class="tag-summary">
@@ -744,7 +1346,7 @@ const SEED_RECIPES = [
       "Blend the cheese sauce ingredients (cottage cheese, cheddar, milk, salt & pepper) until smooth, then stir into the pot along with the pasta.",
       "Transfer to a baking dish, top with mozzarella, and bake at 200°C for 10–15 minutes until golden."
     ],
-    notes: "Macros as given: ~475 kcal, 40g protein, 13g fat, 28g carbs PER SERVING — the source didn't specify how many servings this batch makes, so a whole-batch total isn't calculated here. Let me know the serving count if you want it converted."
+    notes: "Per serving: ~475 kcal, 40g protein, 13g fat, 28g carbs."
   },
   {
     title: "Skyr & Raspberry Bake (Skyrnik z Malinami)",
@@ -768,7 +1370,6 @@ const SEED_RECIPES = [
       "Wkładamy do piekarnika, wcześniej nagrzanego, temperatura 170 stopni termoobieg, 20–25 min.",
       "Wariant w foremkach na muffinki: 18 minut z mrożonymi owocami."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim."
   },
   {
     title: "High-Protein Cottage Cheese Rolls",
@@ -828,7 +1429,6 @@ const SEED_RECIPES = [
       "Do środka: 1 łyżka budyniu + maliny + kruszonka.",
       "Piecz 180°C, 28–30 min, do zarumienienia."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim."
   },
   {
     title: "Mini Fit Apple Tarts (Szarlotki)",
@@ -853,7 +1453,7 @@ const SEED_RECIPES = [
       "Wstawić do nagrzanego piekarnika góra-dół 180 stopni na około 25–30 minut.",
       "Po upieczeniu posypać cukrem pudrem, ewentualnie cynamonem."
     ],
-    notes: "Świetne jako deser czy przekąska, do kawy, herbaty, na śniadanie jako przekąska do śniadaniówki. Świetne dla małych! Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Świetne jako deser czy przekąska, do kawy, herbaty, na śniadanie jako przekąska do śniadaniówki. Świetne dla małych!"
   },
   {
     title: "Hidden Veggie Baked Chicken Nuggets",
@@ -879,7 +1479,6 @@ const SEED_RECIPES = [
       "Place on a lined tray and spray with oil.",
       "Bake 20–25 minutes, flipping halfway."
     ],
-    notes: "Screenshot was cut off — if there were extra steps or a serving/storage note at the end, send that part over and I'll add it."
   },
   {
     title: "Bułeczki Bajglowe (Sesame Bread Rolls)",
@@ -913,7 +1512,6 @@ const SEED_RECIPES = [
       "Bułki posmarować rozbełtanym jajkiem, posypać czarnuszką i sezamem.",
       "Wstawić do piekarnika, piec 20 minut w temp. 180°C."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim. Zdjęcie: nie udało się zapisać z wklejonego w czacie zrzutu ekranu — pasowałoby dobre ujęcie gotowych, złocistych obwarzanków posypanych sezamem."
   },
   {
     title: "Fit Strawberry Buns (Fit Bułeczki)",
@@ -936,7 +1534,7 @@ const SEED_RECIPES = [
       "Gotowe! Najlepsze na ciepło, ale sprawdzą się też do lunchboxa czy po treningu."
     ],
     macros: { calories: "790 kcal", protein: "53.5 g" },
-    notes: "Wartość odżywcza wg autorki (1 bułeczka z 5): 158 kcal, 10,7 g białka — wartości powyżej to suma dla całej porcji (5 sztuk). Bez dodatku cukru. Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Wartość odżywcza wg autorki (1 bułeczka z 5): 158 kcal, 10,7 g białka — wartości powyżej to suma dla całej porcji (5 sztuk). Bez dodatku cukru."
   },
   {
     title: "Cottage Cheese Pizza Crust (Pizza z Twarogu)",
@@ -962,7 +1560,7 @@ const SEED_RECIPES = [
       "Po upieczeniu ciasta wyciągam, nakładam sos i ulubione dodatki.",
       "Piekę kolejne ok. 8–10 min w 175 stopniach. Gotowe!"
     ],
-    notes: "Zrobione w air fryerze, ale można też upiec w zwykłym piekarniku. Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Zrobione w air fryerze, ale można też upiec w zwykłym piekarniku."
   },
   {
     title: "Baked Blueberry Protein Cheesecake (Serniczek na Redukcji)",
@@ -992,7 +1590,7 @@ const SEED_RECIPES = [
       "Na ciepło czy na zimno – smakuje obłędnie!"
     ],
     macros: { calories: "499 kcal", protein: "38.4 g", fat: "14.4 g", carbs: "53.1 g" },
-    notes: "Przepis na 1 porcję, więc podane wyżej makro dotyczy całej (jednoporcjowej) porcji. Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Przepis na 1 porcję, więc podane wyżej makro dotyczy całej (jednoporcjowej) porcji."
   },
   {
     title: "Cottage Cheese Queso",
@@ -1042,7 +1640,7 @@ const SEED_RECIPES = [
       "Top with sour cream and green onions as desired."
     ],
     macros: { calories: "1584 kcal (calories only — no protein/carb/fat breakdown given)" },
-    notes: "Makes 8 skins. Only calories (198 kcal per skin) were stated on the source page — no protein/carb/fat figures were given, so those aren't included above."
+    notes: "Makes 8 skins. Calories: 198 kcal per skin."
   },
   {
     title: "Baked Rice with Apples (Ryż Zapiekany z Jabłkami)",
@@ -1073,7 +1671,7 @@ const SEED_RECIPES = [
       "Przed podaniem oprósz odrobiną cynamonu. Podawaj na ciepło lub schłodzone, np. z łyżką kwaśnej śmietany lub gałką lodów waniliowych."
     ],
     macros: { calories: "2562 kcal", carbs: "504 g", protein: "42 g", fat: "42 g" },
-    notes: "Autorka podaje wartości odżywcze na 100 g (122 kcal, 24 g węglowodanów, 2 g białka, 2 g tłuszczu) jako orientacyjne, nielaboratoryjne wyliczenie. Wartości powyżej to przeliczenie na cały ~2100 g przepisu (co najmniej 6 dużych porcji). Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Autorka podaje wartości odżywcze na 100 g (122 kcal, 24 g węglowodanów, 2 g białka, 2 g tłuszczu) jako orientacyjne, nielaboratoryjne wyliczenie. Wartości powyżej to przeliczenie na cały ~2100 g przepisu (co najmniej 6 dużych porcji)."
   },
   {
     title: "Fiesta Chicken",
@@ -1214,7 +1812,7 @@ const SEED_RECIPES = [
       "Na koniec posyp cukrem pudrem i przechowuj pod przykryciem."
     ],
     macros: { calories: "1677 kcal", protein: "57.8 g", carbs: "171.5 g", fat: "79.6 g" },
-    notes: "Makro dla całego przepisu podane przez autora strony (wychodzi około 16 muffinek przy użyciu silikonowych foremek — liczba zależy od tego, jak bardzo je wypełnisz). Treść przepisu pozostawiona w oryginalnym języku polskim."
+    notes: "Makro dla całego przepisu podane przez autora strony (wychodzi około 16 muffinek przy użyciu silikonowych foremek — liczba zależy od tego, jak bardzo je wypełnisz)."
   },
   {
     title: "3-Ingredient Cottage Cheese Egg Muffins",
@@ -1259,7 +1857,6 @@ const SEED_RECIPES = [
       "Serve with sesame seeds and chives, plus rice and edamame if desired."
     ],
     macros: { calories: "502 kcal", protein: "36 g", carbs: "60 g", fat: "13 g" },
-    notes: "The source page doesn't state how many servings these macros are based on — treat as approximate for the whole recipe. No usable photo was found on the source page (only a generic branded template graphic), so no image is included here."
   },
   {
     title: "Crispy Egg Tortilla Bake",
@@ -1397,31 +1994,30 @@ const SEED_RECIPES = [
       "Top with cheddar and pickles.",
       "Mix the sauce ingredients until smooth and drizzle over the top."
     ],
-    notes: "Makes 1 bowl. Source page gives no calorie/protein/carb/fat figures — only a rough estimate of ~3–4 Weight Watchers points per serving, so no macros field is included here. Heads up: this recipe site had some odd unrelated ad links on the page that looked spam-like, so I skipped pulling an image from it out of caution — the recipe content itself was intact and used as-is."
+    notes: "Makes 1 bowl. About 3–4 Weight Watchers points per serving."
   },
   {
-    title: "Karmelowiec (No-Bake Caramel Icebox Cake)",
+    title: "Karmelowiec",
     tags: ["dessert", "vegetarian", "no-cook", "indulgent"],
     source: "Photo (printed recipe card)",
     sourceLink: "",
-    image: "",
+    image: "data:image/jpeg;base64,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",
     ingredients: [
-      "Petit beurre biscuits, white and cocoa (or another kind, as long as they lay flat and fit snugly in the pan)",
-      "2 packets cream/vanilla pudding powder",
-      "2 cups milk",
-      "1 tbsp butter",
-      "1 can krówka (toffee caramel spread, e.g. from Gostyń)",
-      "0.5 L heavy cream (36%), for whipping",
-      "250 g mascarpone cheese",
-      "Dark chocolate (or ready-made chocolate sprinkles), for topping"
+      "herbatniki petitki białe i kakaowe (lub inne wg uznania, byle dające się szczelnie ułożyć na formie)",
+      "2 budynie śmietankowe",
+      "2 szklanki mleka",
+      "1 łyżka masła",
+      "1 puszka karmelu krówkowego (z Gostynia)",
+      "0,5 l śmietany 36% do ubicia",
+      "serek mascarpone 250 g",
+      "gorzka czekolada (gotowa posypka czekoladowa)"
     ],
     steps: [
-      "Make the pudding layer: bring 1 cup of milk with the butter to a boil. Remove from heat and stir in the pudding powder mixed into the second cup of milk, stirring vigorously to avoid lumps, then bring back to a boil (tip: a hand mixer on low speed works well here). Set aside to cool slightly.",
-      "Line a medium pan with baking paper. Arrange a layer of the white biscuits, then spread the still-warm pudding evenly over them (it spreads more easily warm than cold). Top with a layer of the cocoa biscuits, pressing lightly for an even surface.",
-      "Open the can of caramel and place it in boiling water to soften. Stir it smooth with a mixer beater, then spread the warm caramel evenly over the biscuits. Add a final layer of light biscuits on top of the caramel. Once fully cooled, refrigerate.",
-      "Whip the cream in a tall container, adding 1 tbsp powdered sugar partway through. Add the mascarpone and continue whipping until stiff. Spread over the chilled cake and top with grated dark chocolate or chocolate sprinkles. Chill for a few hours before serving."
+      "Ugotować masę budyniową – zagotować 1 szklankę mleka z łyżką masła, zdjąć z ognia i wlać rozmieszane w drugiej szklance mleka budynie, intensywnie mieszając żeby nie porobiły się grudki, zagotować (rada: do mieszania budyniu użyć miksera na wolnych obrotach), odstawić do ostudzenia.",
+      "Formę średniej wielkości wyłożyć papierem do pieczenia, ułożyć warstwę białych ciastek, następnie wyłożyć na nie ciepły budyń i równo rozprowadzić (ciepły budyń łatwiej się rozprowadza niż zimny), następnie ułożyć warstwę ciemnych ciastek lekko dociskając aby była równa powierzchnia.",
+      "Puszkę karmelu otworzyć i włożyć do wrzącej wody aby rozgrzać karmel, następnie przy użyciu jednego mieszadła do miksera rozmieszać karmel w puszce, ciepły karmel wyłożyć na ciastka i równo rozprowadzić, na karmel ułożyć ciastka jasne i po wystudzeniu całości wstawić do lodówki.",
+      "Śmietanę wlać do wysokiego pojemnika i ubić dodając 1 łyżkę stołową cukru pudru, dodać ser mascarpone i nadal ubić na sztywno, wyłożyć na schłodzone ciasto i posypać utartą gorzką czekoladą lub czekoladową posypką. Całość wstawić do lodówki na parę godzin."
     ],
-    notes: "From a printed recipe card, no photo or original link available for this one."
   },
   {
     title: "BBQ Chicken Stuffed Potato Skins",
@@ -1452,7 +2048,7 @@ const SEED_RECIPES = [
       "Spoon the filling back into the potato halves. Top with extra cheese if you like. Bake at 425°F for 12–15 minutes, or until the tops are melted and golden. Broil for the last couple minutes for a crispier finish.",
       "Top with ranch and sliced scallions. Serve with homemade coleslaw for the perfect summer plate."
     ],
-    notes: "Recipe reconstructed from a saved Instagram reel by @thedailykale — the video itself had no on-screen ingredient text, so exact quantities are cross-referenced from her recipe as republished on The Feedfeed (linked above), which matches the video step-for-step. Makes 1 serving (2 stuffed potato halves), as shown. Photo is a still frame captured from the saved video, so image quality is limited."
+    notes: "Makes 1 serving (2 stuffed potato halves)."
   },
   {
     title: "Owocowa Drożdżówka (Strawberry Crumble Yeast Braid)",
@@ -1486,7 +2082,7 @@ const SEED_RECIPES = [
       "Piecz: 180°C około 20 minut, następnie 160°C jeszcze 25–30 minut.",
       "Na koniec sprawdź patyczkiem — jeśli jest suchy, drożdżówka jest gotowa. Gdyby był lekko mokry, wydłuż pieczenie o kolejne 10 minut (przykryj wtedy górę papierem)."
     ],
-    notes: "Autorka nadała tej drożdżówce imię „Janeczka” — upiekła ją po powrocie ze szpitala z córeczką, gdy w domu wszyscy tęsknili za dobrą drożdżówką. Treść przepisu pozostawiona w oryginalnym języku polskim. Zdjęcie to kadr z zapisanego filmu."
+    notes: "Autorka nadała tej drożdżówce imię „Janeczka” — upiekła ją po powrocie ze szpitala z córeczką, gdy w domu wszyscy tęsknili za dobrą drożdżówką."
   },
   {
     title: "Jajka w Sosie Ketchupowo-Majonezowym (Cousin's Recipe)",
@@ -1509,7 +2105,7 @@ const SEED_RECIPES = [
       "Wymieszaj do sosu posiekane ogórki, pomidora i cebulę, albo zostaw je jako osobny dodatek do posypania na wierzchu.",
       "Ułóż połówki jajek na talerzu, polej lub obłóż je sosem i posyp resztą posiekanych dodatków."
     ],
-    notes: "This one's reconstructed, not verified — you described your cousin's version (eggs, ketchup, mayo, diced pickles and tomato) from a photo, but the exact ratios weren't known. Quantities above are a reasonable starting point pulled from a few published Polish home recipes for this style of dish (a simpler, ketchup-based cousin of the classic 'jajka w sosie tatarskim'), not a verified match to her exact recipe. Worth checking with her and adjusting."
+    notes: "Note (my reconstruction): quantities aren't verified against your cousin's exact recipe — worth checking with her and adjusting to taste."
   },
   {
     title: "Refreshing Avocado Grapefruit Salad",
@@ -1620,7 +2216,7 @@ const SEED_RECIPES = [
       "Bake at a high oven temperature until the edges are set but the centers still look slightly underdone, for a crispy shell and gooey center.",
       "Let cool slightly on the tray before moving — they continue to set as they cool."
     ],
-    notes: "From a YouTube video — the ingredient list came from the video's own description text, but the exact method (mixing order, bake temp/time) is only shown on screen, not written out anywhere. Steps above are a standard approach for this style of thick, crispy-edge/gooey-center bakery cookie, not a verbatim transcript of the video — worth watching the video itself (linked) for Jemma's exact technique and timing."
+    notes: "Note (my reconstruction): the steps above are a standard approach for this style of cookie, not a verbatim transcript — for Jemma's exact technique and timing, worth watching the linked video."
   },
   {
     title: "Ultimate Fudgy Chocolate Brownies",
@@ -1676,7 +2272,7 @@ const SEED_RECIPES = [
       "Whisk in milk mixture; cook, stirring constantly, until thickened and corn is heated through, about 4 minutes.",
       "Remove from heat and stir in Parmesan cheese until melted. Serve hot."
     ],
-    notes: "Makes 8 servings. No nutrition figures were included in what was shared for this one, so none are listed here."
+    notes: "Makes 8 servings."
   },
   {
     title: "Grilled Salmon with Bacon and Corn Relish",
@@ -1791,7 +2387,7 @@ const SEED_RECIPES = [
       "Cook 2–3 minutes until everything is coated and juicy. Top with parsley."
     ],
     macros: { calories: "1050–1680 kcal (range, see notes)", protein: "105–160 g (range, see notes)" },
-    notes: "Makes 3–4 large portions. Source states ~350–420 kcal and ~35–40g protein per portion (varies with the amount of thighs used) — totals above scale that across 3 to 4 servings; no carb/fat figures were given in the original. Volume-eating logic from the note: cabbage adds a lot of bulk for very few calories, chicken thighs keep it filling, and the lemon + mustard give bright flavor without extra fat.",
+    notes: "Makes 3–4 large portions. Source states ~350–420 kcal and ~35–40g protein per portion (varies with the amount of thighs used) — totals above scale that across 3 to 4 servings. Volume-eating logic from the note: cabbage adds a lot of bulk for very few calories, chicken thighs keep it filling, and the lemon + mustard give bright flavor without extra fat.",
     tips: [
       "Add zucchini or mushrooms for even more volume.",
       "Serve over cauliflower rice.",
@@ -1808,7 +2404,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "794 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Shakshuka",
@@ -1816,7 +2411,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "346 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Omelette (Ham & Cheese)",
@@ -1824,7 +2418,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "322 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Omelette (Cottage Cheese)",
@@ -1832,7 +2425,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "520 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Cottage Cheese + Blueberries",
@@ -1840,7 +2432,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "350 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Crepe (Ham & Cheese)",
@@ -1848,7 +2439,7 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "377 kcal" },
-    notes: "Idea only — full recipe not written up yet. Listed as both a brunch and dinner option on the original list."
+    notes: "Listed as both a brunch and dinner option on the original list."
   },
   {
     title: "Scrambled Eggs w/ Onion",
@@ -1856,7 +2447,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "398 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Hawaiian Toast",
@@ -1864,7 +2454,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "427 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Eggs w/ Ham & Bread",
@@ -1872,7 +2461,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "525 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Sałatka Jarzynowa",
@@ -1880,7 +2468,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "689 kcal" },
-    notes: "Idea only — full recipe not written up yet. Treść przepisu (nazwa) pozostawiona w oryginalnym języku polskim."
   },
   {
     title: "Cream Cheese + Tomato Sandwich",
@@ -1888,7 +2475,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "468 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Waffles a la Pizza",
@@ -1896,7 +2482,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "426 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Frittata w/ Peppers, Tomatoes & Twaróg",
@@ -1904,7 +2489,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "290 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Blueberry Muffins",
@@ -1912,14 +2496,12 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "500 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Egg Muffin Cups",
     tags: ["breakfast", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Baked Eggs + Cottage Cheese + Veggies",
@@ -1927,7 +2509,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "475 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Lemon, Raspberry & Cream Cheese Oatmeal Cakes",
@@ -1935,14 +2516,12 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "510 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Soft Boiled Eggs w/ Bread & Butter",
     tags: ["breakfast", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Omlette w/ Tomatoes & Mozzarella",
@@ -1950,7 +2529,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "380 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Skyr Pancakes",
@@ -1958,7 +2536,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "579 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Egg & Cottage Cheese Bake",
@@ -1966,7 +2543,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "475 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Oatmeal w/ Fried Apples & Skyr",
@@ -1974,7 +2550,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "587 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Jacket Potato w/ Cottage Cheese",
@@ -1982,14 +2557,12 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "380 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Pan con Tomate",
     tags: ["breakfast", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure listed."
   },
   {
     title: "Fajitas",
@@ -1997,7 +2570,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "563 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Kebabs",
@@ -2005,7 +2577,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "598 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Spaghetti Bolognese",
@@ -2013,7 +2584,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "741 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Chili Con Carne",
@@ -2021,14 +2591,12 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "724 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Cod, Potatoes & Mizeria",
     tags: ["dinner", "fish"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Eggs, Potatoes & Mizeria",
@@ -2036,21 +2604,18 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "508 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Tacos",
     tags: ["dinner"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Honey Mustard Chicken",
     tags: ["dinner", "chicken"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Tortilla Pizza",
@@ -2058,28 +2623,24 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "435 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Sweet & Sour Chicken",
     tags: ["dinner", "chicken"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Teriyaki Chicken",
     tags: ["dinner", "chicken"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Egg Fried Rice w/ Veggies & Chicken",
     tags: ["dinner", "chicken"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Stuffed Peppers",
@@ -2087,7 +2648,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "460 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Chicken Roulades w/ Mushrooms, Onion & Cheese",
@@ -2095,7 +2655,7 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "410 kcal" },
-    notes: "Idea only — full recipe not written up yet. Bake note from the original list: 180°C, 30 min covered + 15 min uncovered."
+    notes: "Bake note from the original list: 180°C, 30 min covered + 15 min uncovered."
   },
   {
     title: "Turkey Veggie Meatballs w/ Tomato Sauce & Pasta",
@@ -2103,7 +2663,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "647 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Bigos",
@@ -2111,14 +2670,12 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "672 kcal" },
-    notes: "Idea only — full recipe not written up yet. Treść przepisu (nazwa) pozostawiona w oryginalnym języku polskim."
   },
   {
     title: "Tikka Masala",
     tags: ["dinner"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Vegetable Potato Hash Skillet",
@@ -2126,7 +2683,6 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "562 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Chicken Cabbage Stir Fry w/ Rice",
@@ -2134,21 +2690,18 @@ const SEED_RECIPES = [
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
     macros: { calories: "640 kcal" },
-    notes: "Idea only — full recipe not written up yet."
   },
   {
     title: "Sausages, Potatoes, Peppers, Onions",
     tags: ["dinner"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Chicken Parmesan w/ Cottage Cheese + Jacket Potatoes",
     tags: ["dinner", "chicken"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Cabbage & Lemon Slaw",
@@ -2169,56 +2722,48 @@ const SEED_RECIPES = [
       "Let sit a few minutes before serving to soften further."
     ],
     macros: { calories: "100 kcal" },
-    notes: "Fills in the previously idea-only entry with a real recipe."
   },
   {
     title: "Red Cabbage (Hot)",
     tags: ["dinner", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Beets (Hot)",
     tags: ["dinner", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Salad w/ French Dressing",
     tags: ["dinner", "salad", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Potato Wedges + Salad",
     tags: ["dinner", "salad", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Potato Oven Chips + Tomatoes",
     tags: ["dinner", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Sauerkraut Salad w/ Apples",
     tags: ["dinner", "salad", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Salad: Apples + Gherkins",
     tags: ["dinner", "salad", "vegetarian"],
     source: "Personal meal-idea list",
     sourceLink: "", image: "", ingredients: [], steps: [],
-    notes: "Idea only — full recipe not written up yet. No calorie figure was listed for this one."
   },
   {
     title: "Chocolate Protein Waffle Bites (Lunchbox Idea)",
@@ -2239,7 +2784,7 @@ const SEED_RECIPES = [
       "Wylej ciasto do rozgrzanej gofrownicy w kształcie serc/rombów i piecz do ściągnięcia.",
       "Udekoruj świeżymi jagodami i przechowuj w pojemniku lunchboxowym."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim. Reconstructed from a saved Instagram Reel (\"Pomysły do lunchboxa #5\") — exact ingredient amounts were shown on screen; the waffle-iron method and blueberry topping are reconstructed from the video."
+    notes: "Note (partly reconstructed): ingredient amounts came from the source video, but the waffle-iron method and blueberry topping are reconstructed from what's shown, not stated outright."
   },
   {
     title: "Zapiekany Kurczak (Baked Chicken with Potato & Bell Pepper)",
@@ -2268,7 +2813,7 @@ const SEED_RECIPES = [
       "Zapiekaj w piekarniku do ściągnięcia i zezłocenia wierzchu.",
       "Podawaj z sałatką."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim. Reconstructed from a saved Instagram Reel (@klaudia_trener_personalny) — no exact quantities were shown on screen, so amounts aren't specified; adjust to taste and pan size."
+    notes: "Note (reconstructed from a video): no exact quantities were shown, so amounts aren't specified — adjust to taste and pan size."
   },
   {
     title: "Zapiekane Tortille (Crispy Baked Tortilla Pockets)",
@@ -2291,7 +2836,7 @@ const SEED_RECIPES = [
       "Podsmaż na patelni (lub zapiecz) z obu stron do złocistości i chrupkości.",
       "Przekrój na kawałki i podawaj na ciepło."
     ],
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim. Reconstructed from a saved Instagram Reel (@klaudia_trener_personalny) — no exact quantities were shown on screen; amounts are approximate."
+    notes: "Note (reconstructed from a video): no exact quantities were shown, so amounts are approximate."
   },
   {
     title: "Cottage Cheese Chicken Crust Pizza",
@@ -2316,7 +2861,6 @@ const SEED_RECIPES = [
       "Pull the crust out and add sauce, cheese, and whatever toppings you like.",
       "Place back in the oven for 10 minutes, and enjoy!"
     ],
-    notes: "Full ingredients and directions were shown on screen in the video's caption (Part 2 of a Cottage Cheese series, @ejscookin)."
   },
   {
     title: "Protein Pancake Bowl",
@@ -2343,7 +2887,7 @@ const SEED_RECIPES = [
       "For a more balanced version, swap the flour for wholemeal or oat flour."
     ],
     macros: {"calories":"376 kcal","protein":"33 g","carbs":"44 g","fat":"6 g"},
-    notes: "Per bowl — multiply ingredients by however many servings you want to make. Source also states ~7.5g fibre per bowl. Full ingredients and macros were shown in the video caption (@gojordannutrition)."
+    notes: "Per bowl — multiply ingredients by however many servings you want to make. Source also states ~7.5g fibre per bowl."
   },
   {
     title: "Cheeseburger Bułeczki (Cheeseburger Stuffed Buns)",
@@ -2376,7 +2920,7 @@ const SEED_RECIPES = [
       "Smaż bułeczki na małym ogniu pod przykryciem, z obu stron, do zezłocenia."
     ],
     macros: {"calories":"400 kcal","protein":"36 g","carbs":"47 g","fat":"8 g"},
-    notes: "Treść przepisu pozostawiona w oryginalnym języku polskim. Makes 6 buns; macros above are per bun, as stated in the video (B: białko/protein, T: tłuszcz/fat, W: węglowodany/carbs). Full ingredients and macros were shown on screen (@patrycja.haras)."
+    notes: "Makes 6 buns; macros above are per bun, as stated in the video (B: białko/protein, T: tłuszcz/fat, W: węglowodany/carbs)."
   },
   {
     title: "Potato Tart",
@@ -2402,7 +2946,7 @@ const SEED_RECIPES = [
       "Top with shredded cheese and bake at 350°F for 40 minutes, until set and golden.",
       "Let it rest a few minutes before slicing and serving."
     ],
-    notes: "Full ingredients and steps were shown on screen (@tastyiri_en). Total time 40 minutes, oven 350°F."
+    notes: "Total time 40 minutes, oven 350°F."
   },
   {
     title: "Spanish Baked Eggs (Huevos a la Flamenca Style)",
@@ -2430,7 +2974,7 @@ const SEED_RECIPES = [
       "Cook gently until the eggs are just set.",
       "Top with diced jamón or chorizo and serve straight from the dish."
     ],
-    notes: "Reconstructed from a saved Instagram Reel (@cookingfromspain) — no exact quantities were given in the video's narration or captions; this is a Spanish-style baked egg dish (similar to huevos a la flamenca). Amounts are approximate — adjust to taste and pan size."
+    notes: "Note (reconstructed from a video): no exact quantities were given, so amounts are approximate — adjust to taste and pan size. A Spanish-style baked egg dish, similar to huevos a la flamenca."
   },
   {
     title: "Fried Egg Sandwich",
@@ -2452,7 +2996,7 @@ const SEED_RECIPES = [
       "Layer the fried egg, cheese, bacon, lettuce, and tomato between the bun or bread.",
       "Press together and serve."
     ],
-    notes: "Reconstructed from a saved Instagram Reel (@zycie_na_deficycie_) — the caption notes you can use a dark bun or bread instead, but the base is always fried egg. No exact quantities were given; treat this as an assembly idea more than a strict recipe."
+    notes: "Note (reconstructed from a video, more of an assembly idea than a strict recipe): the original creator's caption mentions you can swap in a dark bun or bread instead — the base is always a fried egg."
   },
   {
     title: "High Protein Cheesy Beef Potato Pockets",
@@ -2511,7 +3055,7 @@ const SEED_RECIPES = [
       "Zwiń w qurrito (podwiń boki i dolną część), a następnie podpiecz z obu stron na suchej patelni do przypieczenia i roztopienia się sera."
     ],
     macros: { calories: "630 kcal", protein: "50 g" },
-    notes: "Steps reconstructed — the original source only showed the finished ingredient list, not written instructions."
+    notes: "Note: steps are reconstructed, since the source only showed the finished ingredient list, not written instructions."
   },
   {
     title: "Jabłka w Cieście",
@@ -2533,7 +3077,7 @@ const SEED_RECIPES = [
       "Zanurz plastry jabłka w cieście.",
       "Smaż na rozgrzanym oleju z obu stron do złocistego koloru."
     ],
-    notes: "Steps reconstructed from the standard method for this style of dish — the source carousel showed ingredients and finished photos rather than written instructions."
+    notes: "Note: steps are reconstructed using the standard method for this style of dish, since the source only showed ingredients and finished photos, not written instructions."
   },
   {
     title: "Kluski Leniwe",
@@ -2553,7 +3097,7 @@ const SEED_RECIPES = [
       "Uformuj wałek, podsyp mąką i pokrój na kluski.",
       "Wrzuć na osolony wrzątek i gotuj do wypłynięcia na powierzchnię (2-3 minuty)."
     ],
-    notes: "Steps reconstructed from the standard method for kluski leniwe — the source carousel showed ingredients and finished photos rather than written instructions."
+    notes: "Note: steps are reconstructed using the standard method for kluski leniwe, since the source only showed ingredients and finished photos, not written instructions."
   },
   {
     title: "Tosty bez Chleba",
@@ -2576,7 +3120,7 @@ const SEED_RECIPES = [
       "Na jednym plastrze ułóż szpinak, paprykę/cukinię i ser żółty, przykryj drugim.",
       "Podgrzewaj razem chwilę, aż ser się roztopi."
     ],
-    notes: "Steps reconstructed from the standard method for this style of dish — the source carousel showed ingredients and finished photos rather than written instructions."
+    notes: "Note: steps are reconstructed using the standard method for this style of dish, since the source only showed ingredients and finished photos, not written instructions."
   },
   {
     title: "Pizza na Spodzie z Serka Wiejskiego z Jajkiem",
@@ -2621,7 +3165,7 @@ const SEED_RECIPES = [
       "Podawaj ze skyrem waniliowym, masłem orzechowym i malinami."
     ],
     macros: { calories: "500 kcal", protein: "26 g", carbs: "52 g", fat: "17 g" },
-    notes: "Steps reconstructed from the standard method for this style of pancake — the source only gave ingredients and macros."
+    notes: "Note: steps are reconstructed using the standard method for this style of pancake, since the source only gave ingredients and macros."
   },
   {
     title: "Cheese & Egg Flatbread (Bread Substitute)",
@@ -2641,7 +3185,7 @@ const SEED_RECIPES = [
       "Bake until set and lightly golden.",
       "Cool slightly, then use in place of bread — e.g. topped with lettuce and tomato as an open sandwich."
     ],
-    notes: "No exact quantities given in the source — treat as a rough blended batter and adjust thickness/bake time to taste. Conceptually close to the cottage-cheese-crust recipes already in the box, kept as its own entry per request."
+    notes: "No exact quantities given in the source — treat as a rough blended batter and adjust thickness/bake time to taste."
   },
   {
     title: "Placki z Serka Wiejskiego, Szynką i Mozzarellą",
@@ -2665,7 +3209,7 @@ const SEED_RECIPES = [
       "Dodaj posiekaną szynkę, mozzarellę i szczypiorek, wymieszaj.",
       "Smaż placki na rozgrzanej patelni z obu stron do złocistego koloru."
     ],
-    notes: "Steps reconstructed — the source only showed exact ingredient quantities plus photos of a pancake cooking, no written method."
+    notes: "Note: steps are reconstructed, since the source only showed ingredient quantities and photos, not a written method."
   },
   {
     title: "Quesadille z Kurczakiem i BBQ",
@@ -2788,7 +3332,7 @@ const SEED_RECIPES = [
       "Pour the batter directly into the hot pan.",
       "Return to the oven and bake at 220°C for about 15 minutes."
     ],
-    notes: "Translated to English per request. Bake in a 28cm cast-iron pan."
+    notes: "Bake in a 28cm cast-iron pan."
   },
   {
     title: "Greek Chicken Thigh Pita Wraps",
@@ -2811,7 +3355,7 @@ const SEED_RECIPES = [
       "Whisk together the wrap sauce ingredients.",
       "Slice the chicken, load into the warm pita with tomatoes, cucumber and wrap sauce."
     ],
-    notes: "Pita cooking method reconstructed from the ingredient list and general technique — exact step wording wasn't fully legible in the source screenshot."
+    notes: "Note: the pita cooking method is reconstructed from the ingredient list and general technique, since exact step wording wasn't fully legible in the source screenshot."
   },
   {
     title: "Honey Soy Chicken Rice Bowl (Meal Prep)",
@@ -2886,7 +3430,7 @@ const SEED_RECIPES = [
       "Nałóż ciasto formując 4 placki, wciśnij w nie truskawki i ponownie popsikaj oliwą.",
       "Piecz w air fryerze w 180°C przez ok. 11-13 minut. Posyp cukrem pudrem lub erytrytolem w pudrze przed podaniem."
     ],
-    notes: "Makes 4 racuchy (pancakes) — distinct from the yeast-bun style airfryer strawberry buns, which were left out of the box."
+    notes: "Makes 4 racuchy (pancakes)."
   },
   {
     title: "Zapiekanka Jajeczna z Serkiem Wiejskim i Warzywami",
@@ -2922,7 +3466,7 @@ const SEED_RECIPES = [
     image: "",
     ingredients: [],
     steps: [],
-    notes: "Idea only — the photo showed grilled diced chicken, cilantro-lime rice, a corn salsa (corn, cilantro, onion) and pico de gallo (tomato, onion, jalapeño, cilantro), portioned into meal-prep containers, but no written recipe or quantities were given."
+    notes: "The photo showed grilled diced chicken, cilantro-lime rice, a corn salsa (corn, cilantro, onion) and pico de gallo (tomato, onion, jalapeño, cilantro), portioned into meal-prep containers."
   },
   {
     title: "Flaugnarde of Mixed Berries (Clafoutis)",
@@ -3002,6 +3546,125 @@ const SEED_RECIPES = [
     ],
     macros: { calories: "435 kcal", protein: "31 g", fat: "26 g", carbs: "19 g", fiber: "3 g" },
     notes: "Makes 8 placków. Macro figures are for half the batch (4 placki), as stated in the source."
+  },
+  {
+    title: "Dutch Baby (Pieczony naleśnik z chrupiącą skórką)",
+    tags: ["breakfast", "vegetarian"],
+    source: "Kwestia Smaku",
+    sourceLink: "https://www.kwestiasmaku.com/przepis/dutch-baby",
+    image: "",
+    ingredients: [
+      "3 jajka",
+      "1/2 szklanki mleka (125 ml)",
+      "1/2 szklanki mąki pszennej",
+      "1 łyżeczka cukru wanilinowego",
+      "mała szczypta soli",
+      "masło (4 łyżki do sklarowania)",
+      "kilka śliwek węgierek",
+      "do podania: cukier puder, klarowane masło, sok z cytryny"
+    ],
+    steps: [
+      "Jajka ogrzać (np. włożyć do garnka z ciepłą wodą) lub wyjąć wcześniej z lodówki. Mleko delikatnie podgrzać lub ogrzać w temperaturze pokojowej.",
+      "Piekarnik nagrzać do 220°C. Sklarować 4 łyżki masła (podgrzać w rondelku, zebrać i usunąć pianę). Śliwki umyć, osuszyć, podzielić na połówki, usunąć pestki.",
+      "Do blendera wbić jajka, dodać mleko, mąkę, cukier wanilinowy i sól. Rozgrzać żaroodporną patelnię typu \"skillet\" (lub inną, którą można wkładać do piekarnika) na średnim ogniu, a gdy będzie gorąca, rozprowadzić po niej 2 łyżki klarowanego masła.",
+      "Zmiksować składniki z blendera krótko (4 sekundy) na jednolitą masę i wlać powoli na patelnię. Na wierzchu rozłożyć połówki śliwek i wstawić do nagrzanego piekarnika. Piec bez przykrycia przez 20 minut, aż omlet miejscami urośnie i będzie dobrze zrumieniony i chrupiący.",
+      "Wyjąć z piekarnika i polać resztą klarowanego masła. Posypać cukrem pudrem (koniecznie, bo sam omlet nie jest słodki) i pokroić na porcje. Skropić sokiem z cytryny przed podaniem."
+    ],
+    tips: [
+      "Do przenoszenia żeliwnej patelni typu \"skillet\" należy używać rękawic kuchennych, bo rączka bardzo mocno się nagrzewa.",
+      "Jeśli nie masz patelni, którą można podgrzewać na ogniu i wstawiać do piekarnika, użyj naczynia żaroodpornego lub blaszki do pieczenia — podgrzej je w piekarniku, wlej masę na omlet i piecz dalej jak w przepisie."
+    ],
+    notes: "Makes 2 servings. American-style oven-baked pancake with a thick, crispy crust — can be made plain or with fruit (plums, apples, peaches) baked in, and topped after baking with berries if you like. There's also a savory version."
+  },
+  {
+    title: "Tomato Bruschetta",
+    tags: ["vegetarian", "snack", "quick"],
+    source: "BBC Good Food",
+    sourceLink: "https://www.bbcgoodfood.com/recipes/tomato-bruschetta",
+    image: "",
+    ingredients: [
+      "½ small red onion, finely chopped",
+      "8 medium tomatoes (about 500g), coarsely chopped and drained",
+      "2-3 garlic cloves, crushed",
+      "6-8 leaves fresh basil, finely chopped",
+      "30ml balsamic vinegar",
+      "60-80ml extra virgin olive oil",
+      "1 loaf crusty bread",
+      "salt and pepper, to taste"
+    ],
+    steps: [
+      "In a large bowl, mix the onion, tomatoes, garlic and basil, taking care not to mash or break up the tomatoes too much.",
+      "Add the balsamic vinegar and extra virgin olive oil, then season with salt and pepper to taste. Mix again.",
+      "Cover and chill for at least an hour to let the flavours soak and blend together.",
+      "Slice the loaf diagonally into 12 thick slices and lightly toast until light brown on both sides.",
+      "Serve the tomato mixture on the warm bread slices. If you prefer it at room temperature, remove the mixture from the fridge half an hour before serving."
+    ],
+    macros: { calories: "1860 kcal", protein: "48 g", carbs: "252 g", fat: "72 g" },
+    notes: "Makes 6 servings. Per serving: 310 kcal, 12g fat, 42g carbs, 8g protein, 3g fibre, 0.72g salt (as given on BBC Good Food)."
+  },
+  {
+    title: "Ślimaczki z Ciasta Francuskiego",
+    tags: ["snack", "quick", "chicken"],
+    source: "Instagram (@chcesz.gryza)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "opakowanie ciasta francuskiego",
+      "6 plastrów sera żółtego",
+      "6 plastrów szynki z kurczaka",
+      "ketchup"
+    ],
+    steps: [
+      "Rozkładamy ciasto francuskie na blacie, smarujemy dokładnie ketchupem, można posypać np. bazylią do smaku.",
+      "Układamy na całej długości plastry sera, na to szynkę.",
+      "Zawijamy od dłuższej części ciasta i kroimy na paski 2-3 centymetrowe.",
+      "Układamy na blaszce do pieczenia i zapiekamy w piekarniku przez 20 minut (aż się zarumienią) w 180 stopniach, najlepiej grzanie góra-dół.",
+      "Zajadamy z ulubionym dipem."
+    ],
+    notes: "Puff pastry pinwheels/rolls with cheese, chicken ham and ketchup, good warm or cold."
+  },
+  {
+    title: "High Protein Crispy Honey Garlic Chicken Fried Rice",
+    tags: ["chicken", "high-protein", "dinner", "meal-prep"],
+    source: "TikTok/Instagram (@aussiefitness)",
+    sourceLink: "https://www.tiktok.com/@aussiefitness/video/7549903792125250837",
+    image: "",
+    ingredients: [
+      "1.05kg diced boneless & skinless chicken breast (raw weight)",
+      "35ml salt-reduced soy sauce (e.g. Kikkoman's)",
+      "2 garlic cloves, minced",
+      "1/2 tsp black pepper",
+      "1 tsp onion powder",
+      "1 tsp garlic powder",
+      "100g potato starch (not all of this gets used — roughly 40g sticks to the chicken)",
+      "500g frozen mixed vegetables (peas, carrots, corn)",
+      "4 eggs & 200g egg whites (or 5 regular eggs)",
+      "30g spring onion/scallions, white part only",
+      "980g day-old cooked white rice",
+      "40ml salt-reduced soy sauce",
+      "20g spring onion/scallions, green part only",
+      "— Honey garlic sauce —",
+      "5 garlic cloves, minced",
+      "60ml salt-reduced soy sauce",
+      "60ml water",
+      "100g reduced-sugar ketchup",
+      "25ml rice wine vinegar",
+      "1 tsp cornflour mixed with 80ml cold water",
+      "80g honey"
+    ],
+    steps: [
+      "Marinate the diced chicken breast with the soy sauce, minced garlic, black pepper, onion powder and garlic powder.",
+      "Toss the marinated chicken in potato starch (a sealed bag works well) until evenly coated, shaking off excess.",
+      "Air fry at 200°C/400°F for 14-18 minutes, flipping and spraying with oil halfway through, until crispy and cooked through.",
+      "Whisk the eggs and egg whites, then scramble in a hot pan with the frozen mixed vegetables and the white part of the spring onion.",
+      "Stir in the day-old cooked rice and the remaining 40ml soy sauce, mixing well and heating through. Stir in the green part of the spring onion.",
+      "For the sauce: sizzle the 5 minced garlic cloves in a pan, then add the soy sauce, water, ketchup and rice wine vinegar. Bring to a simmer.",
+      "Mix the cornflour with the cold water to make a slurry, then stir into the sauce to thicken.",
+      "Take the sauce off the heat and stir in the honey.",
+      "Toss the crispy chicken through the honey garlic sauce, then serve over the fried rice."
+    ],
+    macros: { calories: "3822 kcal", protein: "357 g", carbs: "465.5 g", fat: "49 g" },
+    notes: "Makes 7 servings. Per serving (as given by the creator): 546 kcal, 66.5g carbs, 7g fat, 51g protein."
   }
 
 ];
@@ -3030,7 +3693,12 @@ const LS_KEYS = {
   userRecipes: "recipeBox_userRecipes",
   deletedIds: "recipeBox_deletedIds",
   tagOverrides: "recipeBox_tagOverrides",
-  titleOverrides: "recipeBox_titleOverrides"
+  titleOverrides: "recipeBox_titleOverrides",
+  favorites: "recipeBox_favorites",
+  cookCounts: "recipeBox_cookCounts",
+  ratings: "recipeBox_ratings",
+  shoppingList: "recipeBox_shoppingList",
+  mealPlanWeeks: "recipeBox_mealPlanWeeks"
 };
 function lsGet(key, fallback) {
   try {
@@ -3046,6 +3714,144 @@ let userRecipes = lsGet(LS_KEYS.userRecipes, []);
 let deletedIds = lsGet(LS_KEYS.deletedIds, []);
 let tagOverrides = lsGet(LS_KEYS.tagOverrides, {});
 let titleOverrides = lsGet(LS_KEYS.titleOverrides, {});
+let favorites = lsGet(LS_KEYS.favorites, []); // array of recipe ids
+let cookCounts = lsGet(LS_KEYS.cookCounts, {}); // { [id]: number }
+let ratings = lsGet(LS_KEYS.ratings, {}); // { [id]: { rating: "up"|"meh"|"down"|null, note: "" } }
+let shoppingList = lsGet(LS_KEYS.shoppingList, []); // [{ id, text, recipeId, recipeTitle, checked }]
+
+function isFavorite(id) { return favorites.includes(id); }
+function toggleFavorite(id) {
+  favorites = isFavorite(id) ? favorites.filter(x => x !== id) : [...favorites, id];
+  lsSet(LS_KEYS.favorites, favorites);
+}
+function getCookCount(id) { return cookCounts[id] || 0; }
+function incrementCookCount(id) {
+  cookCounts = { ...cookCounts, [id]: getCookCount(id) + 1 };
+  lsSet(LS_KEYS.cookCounts, cookCounts);
+}
+function decrementCookCount(id) {
+  cookCounts = { ...cookCounts, [id]: Math.max(0, getCookCount(id) - 1) };
+  lsSet(LS_KEYS.cookCounts, cookCounts);
+}
+
+// ------------------------------------------------------------------
+// PERSONAL RATINGS & NOTES — a private, per-browser "would I make
+// this again" rating plus a free-text note, separate from the
+// recipe's own source notes. Purely local state, like favorites and
+// the cook counter — never baked into the exported SEED_RECIPES.
+// ------------------------------------------------------------------
+function getRatingEntry(id) {
+  const entry = ratings[id];
+  // Numbers only — a leftover "up"/"meh"/"down" string from an earlier
+  // version of this feature is treated as unrated rather than crashing.
+  const rating = entry && typeof entry.rating === "number" ? entry.rating : null;
+  return { rating, note: (entry && entry.note) || "" };
+}
+function setRating(id, rating) {
+  const current = getRatingEntry(id);
+  ratings = { ...ratings, [id]: { ...current, rating } };
+  lsSet(LS_KEYS.ratings, ratings);
+}
+function clearRating(id) {
+  const current = getRatingEntry(id);
+  ratings = { ...ratings, [id]: { ...current, rating: null } };
+  lsSet(LS_KEYS.ratings, ratings);
+}
+// Purple -> pink -> teal (the app's own gradient palette), used for both
+// the modal slider readout and the small card badge, so a rating is
+// recognizable at a glance without clashing with the rest of the design.
+function mixHexColors(hex1, hex2, t) {
+  const c1 = parseInt(hex1.slice(1), 16), c2 = parseInt(hex2.slice(1), 16);
+  const r1 = (c1 >> 16) & 255, g1 = (c1 >> 8) & 255, b1 = c1 & 255;
+  const r2 = (c2 >> 16) & 255, g2 = (c2 >> 8) & 255, b2 = c2 & 255;
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+function ratingColor(n) {
+  const PURPLE = "#8b5cf6", PINK = "#ec4899", TEAL = "#2dd4bf";
+  const t = (n - 1) / 9; // 0..1
+  return t <= 0.5 ? mixHexColors(PURPLE, PINK, t / 0.5) : mixHexColors(PINK, TEAL, (t - 0.5) / 0.5);
+}
+function setNote(id, note) {
+  const current = getRatingEntry(id);
+  ratings = { ...ratings, [id]: { ...current, note } };
+  lsSet(LS_KEYS.ratings, ratings);
+}
+
+// ------------------------------------------------------------------
+// SHOPPING LIST — accumulates ingredients across multiple recipes
+// (adding a new recipe does NOT clear what's already there) so it
+// works as a running list you build up before a grocery run.
+// ------------------------------------------------------------------
+function uid() {
+  return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+}
+function addRecipeToShoppingList(recipeId, recipeTitle, ingredientTexts) {
+  const newItems = ingredientTexts.map(text => ({
+    id: uid(),
+    text,
+    recipeId,
+    recipeTitle,
+    checked: false
+  }));
+  shoppingList = [...shoppingList, ...newItems];
+  lsSet(LS_KEYS.shoppingList, shoppingList);
+}
+function toggleShoppingItem(itemId) {
+  shoppingList = shoppingList.map(item => item.id === itemId ? { ...item, checked: !item.checked } : item);
+  lsSet(LS_KEYS.shoppingList, shoppingList);
+}
+function removeShoppingItem(itemId) {
+  shoppingList = shoppingList.filter(item => item.id !== itemId);
+  lsSet(LS_KEYS.shoppingList, shoppingList);
+}
+function clearCheckedShoppingItems() {
+  shoppingList = shoppingList.filter(item => !item.checked);
+  lsSet(LS_KEYS.shoppingList, shoppingList);
+}
+function clearAllShoppingItems() {
+  shoppingList = [];
+  lsSet(LS_KEYS.shoppingList, shoppingList);
+}
+function getUncheckedShoppingCount() {
+  return shoppingList.filter(item => !item.checked).length;
+}
+
+// ------------------------------------------------------------------
+// WEEKLY MEAL PLANNER — repeating colored weekly blocks (Mon-Sun x
+// Breakfast/Lunch/Dinner/Supper), modeled on paper/spreadsheet
+// planners. Cells are free text (not locked to saved recipes) since
+// real meal planning mixes recipe names, quick descriptions, and
+// leftovers. Weeks accumulate as a running log; add or delete blocks
+// as needed.
+// ------------------------------------------------------------------
+const PLANNER_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const PLANNER_MEALS = ["breakfast", "lunch", "dinner", "supper"];
+const PLANNER_MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", supper: "Supper" };
+
+let mealPlanWeeks = lsGet(LS_KEYS.mealPlanWeeks, []); // [{ id, days: { Mon: {breakfast,lunch,dinner,supper}, ... } }]
+
+function emptyPlannerDays() {
+  const days = {};
+  PLANNER_DAYS.forEach(d => { days[d] = { breakfast: "", lunch: "", dinner: "", supper: "" }; });
+  return days;
+}
+function addMealPlanWeek() {
+  mealPlanWeeks = [...mealPlanWeeks, { id: uid(), days: emptyPlannerDays() }];
+  lsSet(LS_KEYS.mealPlanWeeks, mealPlanWeeks);
+}
+function deleteMealPlanWeek(weekId) {
+  mealPlanWeeks = mealPlanWeeks.filter(w => w.id !== weekId);
+  lsSet(LS_KEYS.mealPlanWeeks, mealPlanWeeks);
+}
+function setMealPlanCell(weekId, day, meal, value) {
+  mealPlanWeeks = mealPlanWeeks.map(w =>
+    w.id === weekId ? { ...w, days: { ...w.days, [day]: { ...w.days[day], [meal]: value } } } : w
+  );
+  lsSet(LS_KEYS.mealPlanWeeks, mealPlanWeeks);
+}
 
 function getAllRecipes() {
   return [...SEED_RECIPES, ...userRecipes]
@@ -3054,8 +3860,49 @@ function getAllRecipes() {
       let out = r;
       if (tagOverrides[r.id]) out = { ...out, tags: tagOverrides[r.id] };
       if (titleOverrides[r.id]) out = { ...out, title: titleOverrides[r.id] };
+      out = { ...out, favorite: isFavorite(r.id), cookCount: getCookCount(r.id) };
       return out;
     });
+}
+
+// ------------------------------------------------------------------
+// DUPLICATE DETECTION — a lightweight title-similarity check used by
+// the Add Recipe form to flag "this might already be in the box"
+// before saving. Not exact-match only: it also catches close titles
+// (extra words, reordered words, minor spelling differences) via a
+// word-overlap score, so it works across the mix of English/Polish/
+// German titles already in the box.
+// ------------------------------------------------------------------
+function normalizeForCompare(s) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/ł/g, "l") // Polish ł doesn't decompose under NFD like ą/ć/ś do, so map it explicitly or it gets silently dropped below
+    .normalize("NFD").replace(/\p{Diacritic}/gu, "") // strip accents/diacritics
+    .replace(/[-_/]+/g, " ") // treat hyphens/underscores/slashes as word separators, not deletions
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function titleSimilarity(a, b) {
+  const na = normalizeForCompare(a), nb = normalizeForCompare(b);
+  if (!na || !nb) return 0;
+  if (na === nb) return 1;
+  if (na.includes(nb) || nb.includes(na)) return 0.9;
+  const wa = new Set(na.split(/\s+/).filter(Boolean));
+  const wb = new Set(nb.split(/\s+/).filter(Boolean));
+  if (wa.size === 0 || wb.size === 0) return 0;
+  const inter = [...wa].filter(w => wb.has(w)).length;
+  const union = new Set([...wa, ...wb]).size;
+  return union ? inter / union : 0;
+}
+function findSimilarRecipes(title, threshold) {
+  threshold = threshold || 0.5;
+  if (!title || !title.trim()) return [];
+  return getAllRecipes()
+    .map(r => ({ recipe: r, score: titleSimilarity(title, r.title) }))
+    .filter(x => x.score >= threshold)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
 }
 
 function addUserRecipe(recipe) {
@@ -3613,6 +4460,52 @@ function metricify(text) {
   return t;
 }
 
+// ------------------------------------------------------------------
+// SERVING-SIZE SCALER — multiplies the leading quantity of an
+// ingredient line (e.g. "200g flour", "1 1/2 cups sugar", "3/4
+// szklanki mąki") by a chosen factor. Only the numeric lead is
+// touched; everything else in the line is left exactly as written.
+// Quantities that don't start with a recognizable number (ranges,
+// words like "garść"/"kilka"/"pół", etc.) are left unscaled.
+// ------------------------------------------------------------------
+function parseLeadingQty(text) {
+  const trimmed = text;
+  let m = trimmed.match(/^(\d+)\s+(\d+)\/(\d+)/); // mixed number, e.g. "1 1/2"
+  if (m) {
+    const whole = parseInt(m[1], 10), num = parseInt(m[2], 10), den = parseInt(m[3], 10);
+    if (den) return { value: whole + num / den, raw: m[0] };
+  }
+  m = trimmed.match(/^(\d+)\/(\d+)/); // simple fraction, e.g. "3/4"
+  if (m) {
+    const num = parseInt(m[1], 10), den = parseInt(m[2], 10);
+    if (den) return { value: num / den, raw: m[0] };
+  }
+  m = trimmed.match(/^(\d+(?:[.,]\d+)?)/); // integer or decimal (allow "2,5" too)
+  if (m) {
+    return { value: parseFloat(m[1].replace(",", ".")), raw: m[0] };
+  }
+  return null;
+}
+function formatScaledNumber(n) {
+  const rounded = Math.round(n * 100) / 100;
+  const whole = Math.floor(rounded);
+  const frac = Math.round((rounded - whole) * 100) / 100;
+  const fracMap = { 0.25: "1/4", 0.5: "1/2", 0.75: "3/4", 0.33: "1/3", 0.67: "2/3" };
+  if (frac === 0) return String(whole);
+  if (fracMap[frac]) return whole > 0 ? `${whole} ${fracMap[frac]}` : fracMap[frac];
+  return String(rounded);
+}
+function scaleIngredientText(text, factor) {
+  if (!text || factor === 1) return text;
+  const qty = parseLeadingQty(text);
+  if (!qty) return text;
+  const scaled = formatScaledNumber(qty.value * factor);
+  return scaled + text.slice(qty.raw.length);
+}
+function renderIngredientsListHtml(ingredients, factor) {
+  return ingredients.map(i => `<li>${escapeHtml(metricify(scaleIngredientText(i, factor)))}</li>`).join("");
+}
+
 function macrosHtml(r) {
   const ingredients = r.ingredients || [];
   const sourceLine = r.macros ? `${
@@ -3673,31 +4566,326 @@ const TAGLINES = [
   "Reduce screen time. Increase simmer time.",
   "This is your sign to actually make the pasta.",
   "Grate minds cook alike.",
-  "Some people dream in color. You dream in recipe reels. Let's fix that."
+  "Some people dream in color. You dream in recipe reels. Let's fix that.",
+  "Let's taco 'bout what's for dinner.",
+  "Don't go bacon my heart — just click the dice.",
+  "Lettuce romaine calm and pick a recipe.",
+  "I'm kind of a big dill in this kitchen.",
+  "Orange you glad you saved this recipe?",
+  "This app runs on thyme management.",
+  "Souper hero energy, right this way.",
+  "Cheese to meet you — now let's cook.",
+  "You're one in a melon, go make dinner.",
+  "Life is gouda. Cooking makes it gouda-er.",
+  "That's a wrap. Now go actually cook the thing.",
+  "Whisking you a very good dinner.",
+  "Let's get this bread. Literally.",
+  "Baste believe it's time to cook.",
+  "You've bean scrolling long enough — pick something.",
+  "Everything's coming up mise en place."
 ];
+
+// A few short, well-loved food lines from film — kept brief and attributed.
+// The two marked favorite show up far more often in the rotation.
+const FOOD_QUOTES = [
+  { text: "Boil 'em, mash 'em, stick 'em in a stew.", attribution: "Samwise Gamgee, The Lord of the Rings: The Two Towers", favorite: true },
+  { text: "We've had one, yes. What about second breakfast?", attribution: "Pippin, The Lord of the Rings: The Fellowship of the Ring", favorite: true },
+  { text: "Anyone can cook.", attribution: "Gusteau, Ratatouille" },
+  { text: "Shrimp is the fruit of the sea.", attribution: "Bubba, Forrest Gump" },
+  { text: "Bon appétit!", attribution: "Julia Child, Julie & Julia" }
+];
+
+// Build the pool of things that can appear: every tagline once, every quote
+// once, plus extra entries for the "favorite" quotes so they come up a lot
+// more often without needing separate logic.
+const TAGLINE_POOL = [
+  ...TAGLINES.map(text => ({ text, attribution: null })),
+  ...FOOD_QUOTES.flatMap(q => Array(q.favorite ? 6 : 1).fill({ text: q.text, attribution: q.attribution }))
+];
+
 function pickTagline(exclude) {
   let choice;
   do {
-    choice = TAGLINES[Math.floor(Math.random() * TAGLINES.length)];
-  } while (choice === exclude && TAGLINES.length > 1);
+    choice = TAGLINE_POOL[Math.floor(Math.random() * TAGLINE_POOL.length)];
+  } while (choice.text === (exclude && exclude.text) && TAGLINE_POOL.length > 1);
   return choice;
+}
+function renderTagline(el, item) {
+  el.innerHTML = item.attribution
+    ? `“${escapeHtml(item.text)}” <span class="tagline-attr">— ${escapeHtml(item.attribution)}</span>`
+    : escapeHtml(item.text);
 }
 function startTaglineRotation() {
   const el = document.getElementById("tagline");
   let current = pickTagline();
-  el.textContent = current;
+  renderTagline(el, current);
   setInterval(() => {
     el.style.opacity = 0;
     setTimeout(() => {
       current = pickTagline(current);
-      el.textContent = current;
+      renderTagline(el, current);
       el.style.opacity = 1;
     }, 400);
-  }, 6000);
+  }, 10000);
 }
 
 let activeTags = new Set(); // multiple tags can be active at once
 let searchTerm = "";
+let ideaFilterMode = "all"; // "all" | "full" | "ideas"
+let currentScaleFactor = 1; // active serving-size multiplier in the open modal
+let favoritesOnly = false;
+
+document.getElementById("favoritesToggleBtn").addEventListener("click", () => {
+  favoritesOnly = !favoritesOnly;
+  document.getElementById("favoritesToggleBtn").classList.toggle("active", favoritesOnly);
+  renderGrid();
+});
+
+// ------------------------------------------------------------------
+// SHOPPING LIST UI — a persistent overlay reachable from the header
+// button. Items accumulate across recipes (never auto-cleared) and
+// are grouped by which recipe they came from, with checkboxes to
+// tick items off while shopping and clear actions once you're done.
+// ------------------------------------------------------------------
+function updateShoppingListBtn() {
+  const btn = document.getElementById("shoppingListBtn");
+  const count = getUncheckedShoppingCount();
+  btn.textContent = count > 0 ? `🛒 Shopping List (${count})` : "🛒 Shopping List";
+  btn.classList.toggle("has-items", count > 0);
+}
+
+function renderShoppingList() {
+  const modal = document.getElementById("shoppingModal");
+  const groups = [];
+  const groupIndex = {};
+  shoppingList.forEach(item => {
+    if (!(item.recipeId in groupIndex)) {
+      groupIndex[item.recipeId] = groups.length;
+      groups.push({ recipeTitle: item.recipeTitle, items: [] });
+    }
+    groups[groupIndex[item.recipeId]].items.push(item);
+  });
+
+  modal.innerHTML = `
+    <button class="close-btn" onclick="closeShoppingList()">✕</button>
+    <div class="shopping-header-row">
+      <h2>🛒 Shopping List</h2>
+      <div class="shopping-header-actions">
+        <button type="button" id="clearCheckedBtn">Clear checked</button>
+        <button type="button" id="clearAllListBtn">Clear all</button>
+      </div>
+    </div>
+    ${shoppingList.length === 0
+      ? `<div class="shopping-empty">Your shopping list is empty. Open any recipe with ingredients and hit "🛒 Add to List" to start building one up.</div>`
+      : groups.map(g => `
+          <div class="shopping-group">
+            <div class="shopping-group-title">${escapeHtml(g.recipeTitle)}</div>
+            <ul>
+              ${g.items.map(item => `
+                <li class="shopping-item ${item.checked ? "checked" : ""}">
+                  <label>
+                    <input type="checkbox" data-id="${item.id}" ${item.checked ? "checked" : ""}>
+                    <span>${escapeHtml(item.text)}</span>
+                  </label>
+                  <button type="button" class="shopping-remove" data-id="${item.id}" title="Remove">×</button>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+        `).join("")
+    }
+  `;
+
+  if (shoppingList.length > 0) {
+    document.getElementById("clearCheckedBtn").addEventListener("click", () => {
+      clearCheckedShoppingItems();
+      renderShoppingList();
+      updateShoppingListBtn();
+    });
+    document.getElementById("clearAllListBtn").addEventListener("click", () => {
+      showConfirm(
+        "Clear the entire shopping list? This can't be undone.",
+        () => { clearAllShoppingItems(); renderShoppingList(); updateShoppingListBtn(); },
+        { confirmLabel: "Clear all", cancelLabel: "Cancel", danger: true }
+      );
+    });
+    modal.querySelectorAll(".shopping-item input[type=checkbox]").forEach(cb => {
+      cb.addEventListener("change", () => {
+        toggleShoppingItem(cb.getAttribute("data-id"));
+        renderShoppingList();
+        updateShoppingListBtn();
+      });
+    });
+    modal.querySelectorAll(".shopping-remove").forEach(btn => {
+      btn.addEventListener("click", () => {
+        removeShoppingItem(btn.getAttribute("data-id"));
+        renderShoppingList();
+        updateShoppingListBtn();
+      });
+    });
+  }
+}
+function openShoppingList() {
+  renderShoppingList();
+  document.getElementById("shoppingOverlay").classList.add("open");
+}
+function closeShoppingList() {
+  document.getElementById("shoppingOverlay").classList.remove("open");
+}
+document.getElementById("shoppingOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "shoppingOverlay") closeShoppingList();
+});
+document.getElementById("shoppingListBtn").addEventListener("click", openShoppingList);
+
+// ------------------------------------------------------------------
+// MEAL PLANNER UI — one colored table per week, stacked. Cell edits
+// save immediately but don't trigger a full re-render (so focus/
+// cursor position isn't lost while typing); only add/delete week
+// re-renders the whole overlay.
+// ------------------------------------------------------------------
+function plannerWeekBlockHtml(week, index) {
+  const colorClass = `planner-color-${index % 6}`;
+  return `
+    <div class="planner-week-block ${colorClass}">
+      <div class="planner-week-header">
+        <span>Week ${index + 1}</span>
+        <button type="button" class="planner-delete-week" data-week="${week.id}" title="Delete this week">×</button>
+      </div>
+      <div class="planner-table-wrap">
+        <table class="planner-table">
+          <thead><tr><th></th>${PLANNER_DAYS.map(d => `<th>${d}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${PLANNER_MEALS.map(m => `
+              <tr>
+                <th>${PLANNER_MEAL_LABELS[m]}</th>
+                ${PLANNER_DAYS.map(d => `<td><input type="text" class="planner-cell" data-week="${week.id}" data-day="${d}" data-meal="${m}" value="${escapeHtml(week.days[d][m] || "")}"></td>`).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+function renderMealPlanner() {
+  const modal = document.getElementById("mealPlannerModal");
+  modal.innerHTML = `
+    <button class="close-btn" onclick="closeMealPlanner()">✕</button>
+    <div class="planner-header-row">
+      <h2>📅 Meal Planner</h2>
+      <div class="planner-header-actions">
+        <button type="button" id="addWeekBtn">+ Add Week</button>
+      </div>
+    </div>
+    <div id="plannerWeeks">${mealPlanWeeks.map((w, i) => plannerWeekBlockHtml(w, i)).join("")}</div>
+  `;
+  document.getElementById("addWeekBtn").addEventListener("click", () => {
+    addMealPlanWeek();
+    renderMealPlanner();
+  });
+  modal.querySelectorAll(".planner-delete-week").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const weekId = btn.getAttribute("data-week");
+      showConfirm(
+        "Delete this week from the meal planner? This can't be undone.",
+        () => { deleteMealPlanWeek(weekId); renderMealPlanner(); },
+        { confirmLabel: "Delete", cancelLabel: "Cancel", danger: true }
+      );
+    });
+  });
+  modal.querySelectorAll(".planner-cell").forEach(input => {
+    input.addEventListener("input", () => {
+      setMealPlanCell(input.getAttribute("data-week"), input.getAttribute("data-day"), input.getAttribute("data-meal"), input.value);
+    });
+  });
+}
+function openMealPlanner() {
+  if (mealPlanWeeks.length === 0) addMealPlanWeek();
+  renderMealPlanner();
+  document.getElementById("mealPlannerOverlay").classList.add("open");
+}
+function closeMealPlanner() {
+  document.getElementById("mealPlannerOverlay").classList.remove("open");
+}
+document.getElementById("mealPlannerOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "mealPlannerOverlay") closeMealPlanner();
+});
+document.getElementById("openMealPlannerBtn").addEventListener("click", openMealPlanner);
+
+// ------------------------------------------------------------------
+// "ADD TO PLANNER" PICKER — a quick popup opened from any recipe
+// modal so a recipe's title can be dropped straight into a meal
+// planner slot without retyping it by hand. Sits above the recipe
+// modal (higher z-index) since it's opened from within it.
+// ------------------------------------------------------------------
+function renderPlannerPicker(recipeId, recipeTitle) {
+  const modal = document.getElementById("plannerPickModal");
+  modal.innerHTML = `
+    <button class="close-btn" onclick="closePlannerPicker()">✕</button>
+    <h3 style="margin-top:0;">📅 Add "${escapeHtml(recipeTitle)}" to Planner</h3>
+    <div class="planner-pick-field">
+      <label>Week</label>
+      <select id="pickWeekSelect">${mealPlanWeeks.map((w, i) => `<option value="${w.id}">Week ${i + 1}</option>`).join("")}</select>
+    </div>
+    <div class="planner-pick-field">
+      <label>Day</label>
+      <select id="pickDaySelect">${PLANNER_DAYS.map(d => `<option value="${d}">${d}</option>`).join("")}</select>
+    </div>
+    <div class="planner-pick-field">
+      <label>Meal</label>
+      <select id="pickMealSelect">${PLANNER_MEALS.map(m => `<option value="${m}">${PLANNER_MEAL_LABELS[m]}</option>`).join("")}</select>
+    </div>
+    <div class="planner-pick-actions">
+      <button type="button" class="cancel-btn" onclick="closePlannerPicker()">Cancel</button>
+      <button type="button" id="confirmPlannerPickBtn">Add to Planner</button>
+    </div>
+  `;
+  document.getElementById("confirmPlannerPickBtn").addEventListener("click", () => {
+    const weekId = document.getElementById("pickWeekSelect").value;
+    const day = document.getElementById("pickDaySelect").value;
+    const meal = document.getElementById("pickMealSelect").value;
+    const week = mealPlanWeeks.find(w => w.id === weekId);
+    const existing = week && week.days[day][meal];
+    const doSet = () => {
+      setMealPlanCell(weekId, day, meal, recipeTitle);
+      closePlannerPicker();
+    };
+    if (existing && existing.trim()) {
+      showConfirm(
+        `That slot already has "${existing}" — replace it with "${recipeTitle}"?`,
+        doSet,
+        { confirmLabel: "Replace", cancelLabel: "Cancel", danger: true }
+      );
+    } else {
+      doSet();
+    }
+  });
+}
+function openPlannerPicker(recipeId, recipeTitle) {
+  if (mealPlanWeeks.length === 0) addMealPlanWeek();
+  renderPlannerPicker(recipeId, recipeTitle);
+  document.getElementById("plannerPickOverlay").classList.add("open");
+}
+function closePlannerPicker() {
+  document.getElementById("plannerPickOverlay").classList.remove("open");
+}
+document.getElementById("plannerPickOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "plannerPickOverlay") closePlannerPicker();
+});
+
+function isIdeaOnly(r) {
+  return (!r.ingredients || !r.ingredients.length) && (!r.steps || !r.steps.length);
+}
+
+document.querySelectorAll("#ideasFilter .ideas-filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    ideaFilterMode = btn.getAttribute("data-mode");
+    document.querySelectorAll("#ideasFilter .ideas-filter-btn").forEach(b => {
+      b.classList.toggle("active", b === btn);
+    });
+    renderGrid();
+  });
+});
 
 function allTags() {
   const set = new Set();
@@ -3782,13 +4970,18 @@ function renderGrid() {
 
   const filtered = all.filter(r => {
     const tagOk = activeTags.size === 0 || Array.from(activeTags).every(t => r.tags.includes(t));
-    return tagOk && matchesSearch(r, searchTerm);
+    const isIdea = isIdeaOnly(r);
+    const ideaOk = ideaFilterMode === "all" ||
+      (ideaFilterMode === "full" && !isIdea) ||
+      (ideaFilterMode === "ideas" && isIdea);
+    const favOk = !favoritesOnly || r.favorite;
+    return tagOk && ideaOk && favOk && matchesSearch(r, searchTerm);
   });
 
   countEl.textContent = `${filtered.length} recipe${filtered.length === 1 ? "" : "s"}`;
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty">No recipes match. Try clearing the search or tag filter.</div>`;
+    grid.innerHTML = `<div class="empty">No recipes match. Try clearing the search, tag filter, ideas filter, or favorites filter.</div>`;
     return;
   }
 
@@ -3796,15 +4989,24 @@ function renderGrid() {
     const card = document.createElement("div");
     card.className = "card";
     card.onclick = () => openModal(r.id);
-    const isIdea = (!r.ingredients || !r.ingredients.length) && (!r.steps || !r.steps.length);
+    const isIdea = isIdeaOnly(r);
+    const rating = getRatingEntry(r.id).rating;
     card.innerHTML = `
-      ${isIdea ? `<span class="idea-badge">Idea</span>` : ""}
+      <button type="button" class="fav-star-btn ${r.favorite ? "is-fav" : ""}" data-id="${escapeHtml(r.id)}" title="${r.favorite ? "Remove from favorites" : "Add to favorites"}">${r.favorite ? "♥" : "♡"}</button>
+      ${isIdea ? `<span class="idea-badge" title="Idea — no full recipe yet">*</span>` : ""}
       ${r.image ? `<img class="card-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : ""}
       <div class="card-body">
         <h3>${escapeHtml(r.title)}</h3>
         <div class="card-tags">${r.tags.map(tagPillHtml).join("")}</div>
       </div>
+      ${r.cookCount > 0 ? `<span class="cook-count-badge">🍳 ${r.cookCount}×</span>` : ""}
+      ${rating !== null ? `<span class="rating-badge" style="background:${ratingColor(rating)}" title="Your rating: ${rating}/10">${rating}</span>` : ""}
     `;
+    card.querySelector(".fav-star-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFavorite(r.id);
+      renderGrid();
+    });
     grid.appendChild(card);
   });
 }
@@ -3825,18 +5027,42 @@ function tagOptionGroupsHtml(currentTags) {
 function openModal(id) {
   const r = getAllRecipes().find(x => x.id === id);
   if (!r) return;
+  currentScaleFactor = 1;
   const modal = document.getElementById("modal");
+  const hasIngredients = r.ingredients && r.ingredients.length > 0;
+  const ratingEntry = getRatingEntry(id);
+  const isRated = ratingEntry.rating !== null;
+  const sliderValue = isRated ? ratingEntry.rating : 5;
   modal.innerHTML = `
-    <button class="close-btn" onclick="closeModal()">✕</button>
-    ${r.image ? `<img class="modal-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : `<div class="modal-img-placeholder">📷 No photo yet</div>`}
+    <button class="close-btn no-print" onclick="closeModal()">✕</button>
+    ${r.image ? `<img class="modal-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : `<div class="modal-img-placeholder no-print">📷 No photo yet</div>`}
     <div class="modal-title-row" id="modalTitleRow">
       <h2 id="modalTitleText">${escapeHtml(r.title)}</h2>
-      <button type="button" class="title-edit-btn" id="editTitleBtn" title="Rename recipe">✎</button>
+      <button type="button" class="modal-fav-btn no-print ${r.favorite ? "is-fav" : ""}" id="modalFavBtn" title="${r.favorite ? "Remove from favorites" : "Add to favorites"}">${r.favorite ? "♥" : "♡"}</button>
+      <button type="button" class="title-edit-btn no-print" id="editTitleBtn" title="Rename recipe">✎</button>
     </div>
-    <div class="card-tags" id="modalTagList">
+    <div class="modal-section cook-tracker-row no-print">
+      <button type="button" class="cook-btn" id="cookedThisBtn">🍳 I cooked this!</button>
+      <button type="button" class="cook-undo-btn" id="cookUndoBtn" title="Undo — subtract one" style="${r.cookCount > 0 ? "" : "display:none;"}">↺ Undo</button>
+      <span class="cook-count-text" id="cookCountText">${r.cookCount > 0 ? `Cooked ${r.cookCount} time${r.cookCount === 1 ? "" : "s"}` : "Not logged yet"}</span>
+    </div>
+    <div class="modal-section no-print">
+      <div class="rating-row">
+        <span class="rating-label">Your rating:</span>
+        <span class="rating-clear-btn" id="ratingClearBtn" style="${isRated ? "" : "display:none;"}">clear</span>
+      </div>
+      <div class="rating-slider-row">
+        <span class="rating-scale-label">1</span>
+        <input type="range" min="1" max="10" step="1" class="rating-slider ${isRated ? "" : "unrated"}" id="ratingSlider" value="${sliderValue}">
+        <span class="rating-scale-label">10</span>
+        <span class="rating-value-badge ${isRated ? "" : "unrated"}" id="ratingValueBadge" style="${isRated ? `background:${ratingColor(sliderValue)}` : ""}">${isRated ? sliderValue : "–"}</span>
+      </div>
+      <textarea class="personal-note-field" id="personalNoteField" placeholder="Personal note (only you see this)…">${escapeHtml(ratingEntry.note || "")}</textarea>
+    </div>
+    <div class="card-tags no-print" id="modalTagList">
       ${r.tags.map(t => `<span class="tag-pill cat-${tagCategory(t)}">${escapeHtml(t)}<button class="tag-remove" data-tag="${escapeHtml(t)}" title="Remove tag">×</button></span>`).join("")}
     </div>
-    <div class="add-tag-row">
+    <div class="add-tag-row no-print">
       <select id="addTagSelect">
         <option value="">+ add a tag…</option>
         ${tagOptionGroupsHtml(r.tags)}
@@ -3844,9 +5070,13 @@ function openModal(id) {
       <input type="text" id="addTagCustom" placeholder="or type a custom tag">
       <button type="button" id="addTagBtn">Add</button>
     </div>
-    ${(r.ingredients && r.ingredients.length) ? `<div class="modal-section">
+    ${hasIngredients ? `<div class="modal-section">
       <h4>Ingredients</h4>
-      <ul>${r.ingredients.map(i => `<li>${escapeHtml(metricify(i))}</li>`).join("")}</ul>
+      <div class="scale-row no-print" id="scaleRow">
+        <span class="scale-label">Scale:</span>
+        ${[0.5, 1, 1.5, 2, 3].map(f => `<button type="button" class="scale-btn ${f === 1 ? "active" : ""}" data-scale="${f}">${f}x</button>`).join("")}
+      </div>
+      <ul id="ingredientsList">${renderIngredientsListHtml(r.ingredients, 1)}</ul>
     </div>` : ""}
     ${(r.steps && r.steps.length) ? `<div class="modal-section">
       <h4>Steps</h4>
@@ -3854,13 +5084,88 @@ function openModal(id) {
     </div>` : ""}
     ${(!r.ingredients || !r.ingredients.length) && (!r.steps || !r.steps.length) ? `<div class="modal-section"><div class="idea-note">💡 Just an idea for now — full recipe not written up yet.</div></div>` : ""}
     ${macrosHtml(r)}
+    ${hasIngredients ? `<div class="scale-hint no-print">Scaling adjusts ingredient amounts only — macros above are for the original (1x) recipe.</div>` : ""}
     ${r.notes ? `<div class="modal-section"><h4>Notes</h4><div>${escapeHtml(r.notes)}</div></div>` : ""}
     ${(r.tips && r.tips.length) ? `<div class="modal-section"><h4>Tips from other cooks</h4><ul>${r.tips.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul></div>` : ""}
-    ${r.sourceLink ? `<div class="modal-section"><a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a></div>` : ""}
-    <div class="modal-section">
+    ${r.sourceLink ? `<div class="modal-section no-print"><a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a></div>` : ""}
+    <div class="modal-section modal-actions-row no-print">
+      <button type="button" class="add-to-planner-btn" id="addToPlannerBtn">📅 Add to Planner</button>
+      ${hasIngredients ? `<button type="button" class="add-to-list-btn" id="addToListBtn">🛒 Add to List</button>` : ""}
+      <button type="button" class="print-recipe-btn" id="printRecipeBtn">🖨️ Print</button>
       <button type="button" class="delete-recipe-btn" id="deleteRecipeBtn">Delete this recipe</button>
     </div>
   `;
+
+  modal.querySelectorAll(".scale-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentScaleFactor = parseFloat(btn.getAttribute("data-scale"));
+      modal.querySelectorAll(".scale-btn").forEach(b => b.classList.toggle("active", b === btn));
+      document.getElementById("ingredientsList").innerHTML = renderIngredientsListHtml(r.ingredients, currentScaleFactor);
+    });
+  });
+
+  document.getElementById("printRecipeBtn").addEventListener("click", () => {
+    window.print();
+  });
+
+  document.getElementById("addToPlannerBtn").addEventListener("click", () => {
+    openPlannerPicker(id, r.title);
+  });
+
+  document.getElementById("modalFavBtn").addEventListener("click", () => {
+    toggleFavorite(id);
+    openModal(id);
+    renderGrid();
+  });
+
+  const ratingSlider = document.getElementById("ratingSlider");
+  const ratingValueBadge = document.getElementById("ratingValueBadge");
+  const ratingClearBtn = document.getElementById("ratingClearBtn");
+  ratingSlider.addEventListener("input", () => {
+    const val = parseInt(ratingSlider.value, 10);
+    ratingSlider.classList.remove("unrated");
+    ratingValueBadge.classList.remove("unrated");
+    ratingValueBadge.textContent = val;
+    ratingValueBadge.style.background = ratingColor(val);
+    ratingClearBtn.style.display = "";
+    setRating(id, val);
+    renderGrid();
+  });
+  ratingClearBtn.addEventListener("click", () => {
+    clearRating(id);
+    openModal(id);
+    renderGrid();
+  });
+  document.getElementById("personalNoteField").addEventListener("input", (e) => {
+    setNote(id, e.target.value);
+  });
+
+  if (hasIngredients) {
+    document.getElementById("addToListBtn").addEventListener("click", () => {
+      const scaledIngredients = r.ingredients.map(i => scaleIngredientText(i, currentScaleFactor));
+      addRecipeToShoppingList(id, r.title, scaledIngredients);
+      updateShoppingListBtn();
+      const btn = document.getElementById("addToListBtn");
+      const original = btn.textContent;
+      btn.textContent = "✓ Added";
+      setTimeout(() => { btn.textContent = original; }, 1200);
+    });
+  }
+
+  function refreshCookUi() {
+    const count = getCookCount(id);
+    document.getElementById("cookCountText").textContent = count > 0 ? `Cooked ${count} time${count === 1 ? "" : "s"}` : "Not logged yet";
+    document.getElementById("cookUndoBtn").style.display = count > 0 ? "" : "none";
+    renderGrid();
+  }
+  document.getElementById("cookedThisBtn").addEventListener("click", () => {
+    incrementCookCount(id);
+    refreshCookUi();
+  });
+  document.getElementById("cookUndoBtn").addEventListener("click", () => {
+    decrementCookCount(id);
+    refreshCookUi();
+  });
 
   modal.querySelectorAll(".tag-remove").forEach(btn => {
     btn.addEventListener("click", (e) => {
@@ -3887,11 +5192,15 @@ function openModal(id) {
   });
 
   document.getElementById("deleteRecipeBtn").addEventListener("click", () => {
-    if (confirm(`Delete "${r.title}"? This removes it from this browser's recipe box.`)) {
-      deleteRecipeById(id);
-      closeModal();
-      renderTagBar(); renderGrid(); renderTagSummary();
-    }
+    showConfirm(
+      `Delete "${r.title}"? This removes it from this browser's recipe box.`,
+      () => {
+        deleteRecipeById(id);
+        closeModal();
+        renderTagBar(); renderGrid(); renderTagSummary();
+      },
+      { confirmLabel: "Delete", cancelLabel: "Cancel", danger: true }
+    );
   });
 
   document.getElementById("editTitleBtn").addEventListener("click", () => {
@@ -3928,6 +5237,39 @@ function closeModal() {
 }
 document.getElementById("overlay").addEventListener("click", (e) => {
   if (e.target.id === "overlay") closeModal();
+});
+
+// ------------------------------------------------------------------
+// CUSTOM CONFIRM DIALOG — used instead of the browser's native
+// confirm() for anything destructive (deleting a recipe, saving a
+// likely duplicate). Native confirm() can be flaky or get silently
+// suppressed in some mobile/in-app browsers, so this is a small
+// in-page overlay that always renders the same way everywhere.
+// ------------------------------------------------------------------
+function showConfirm(message, onConfirm, opts) {
+  opts = opts || {};
+  const confirmLabel = opts.confirmLabel || "OK";
+  const cancelLabel = opts.cancelLabel || "Cancel";
+  const danger = opts.danger !== false;
+  const modal = document.getElementById("confirmModal");
+  modal.innerHTML = `
+    <p class="confirm-message">${escapeHtml(message)}</p>
+    <div class="confirm-actions">
+      <button type="button" class="cancel-btn" id="confirmCancelBtn">${escapeHtml(cancelLabel)}</button>
+      <button type="button" class="${danger ? "delete-recipe-btn" : "cook-btn"}" id="confirmOkBtn">${escapeHtml(confirmLabel)}</button>
+    </div>
+  `;
+  const overlay = document.getElementById("confirmOverlay");
+  overlay.classList.add("open");
+  const close = () => overlay.classList.remove("open");
+  document.getElementById("confirmCancelBtn").addEventListener("click", close);
+  document.getElementById("confirmOkBtn").addEventListener("click", () => {
+    close();
+    onConfirm();
+  });
+}
+document.getElementById("confirmOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "confirmOverlay") e.currentTarget.classList.remove("open");
 });
 
 // ------------------------------------------------------------------
@@ -3974,6 +5316,7 @@ function renderAddForm(prefill) {
     <div class="form-field">
       <label>Title</label>
       <input type="text" id="fTitle" value="${escapeHtml(prefill.title || "")}">
+      <div id="dupWarning"></div>
     </div>
     <div class="form-field">
       <label>Image URL (optional)</label>
@@ -4003,6 +5346,17 @@ function renderAddForm(prefill) {
     </div>
   `;
 
+  function renderDupWarning() {
+    const el = document.getElementById("dupWarning");
+    const title = document.getElementById("fTitle").value;
+    const matches = findSimilarRecipes(title);
+    if (!el) return;
+    if (matches.length === 0) { el.innerHTML = ""; return; }
+    el.innerHTML = `<div class="dup-warning-box">⚠️ This looks similar to ${matches.length === 1 ? "a recipe" : "recipes"} already in the box: ${matches.map(m => `<strong>${escapeHtml(m.recipe.title)}</strong>`).join(", ")}. You can still save it — just flagging it in case it's a duplicate.</div>`;
+  }
+  document.getElementById("fTitle").addEventListener("input", renderDupWarning);
+  renderDupWarning();
+
   document.getElementById("fetchBtn").addEventListener("click", async () => {
     const url = document.getElementById("fUrl").value.trim();
     const status = document.getElementById("fetchStatus");
@@ -4020,27 +5374,42 @@ function renderAddForm(prefill) {
   document.getElementById("saveRecipeBtn").addEventListener("click", () => {
     const title = document.getElementById("fTitle").value.trim();
     if (!title) { alert("Give the recipe a title first."); return; }
-    const checked = Array.from(document.querySelectorAll("#fTagGroups input:checked")).map(cb => cb.value);
-    const custom = document.getElementById("fCustomTags").value.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
-    const tags = Array.from(new Set([...checked, ...custom]));
 
-    const recipe = {
-      title,
-      tags,
-      source: "Added on page",
-      sourceLink: document.getElementById("fUrl").value.trim(),
-      image: document.getElementById("fImage").value.trim(),
-      ingredients: document.getElementById("fIngredients").value.split("\n").map(s => s.trim()).filter(Boolean),
-      steps: document.getElementById("fSteps").value.split("\n").map(s => s.trim()).filter(Boolean),
-      notes: document.getElementById("fNotes").value.trim()
+    const doSave = () => {
+      const checked = Array.from(document.querySelectorAll("#fTagGroups input:checked")).map(cb => cb.value);
+      const custom = document.getElementById("fCustomTags").value.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+      const tags = Array.from(new Set([...checked, ...custom]));
+
+      const recipe = {
+        title,
+        tags,
+        source: "Added on page",
+        sourceLink: document.getElementById("fUrl").value.trim(),
+        image: document.getElementById("fImage").value.trim(),
+        ingredients: document.getElementById("fIngredients").value.split("\n").map(s => s.trim()).filter(Boolean),
+        steps: document.getElementById("fSteps").value.split("\n").map(s => s.trim()).filter(Boolean),
+        notes: document.getElementById("fNotes").value.trim()
+      };
+      // If auto-fill pulled official macros from the source page, keep them
+      // around as a reference note alongside the auto-calculated estimate.
+      if (prefill.macros && Object.keys(prefill.macros).length > 0) recipe.macros = prefill.macros;
+
+      addUserRecipe(recipe);
+      closeAddForm();
+      renderTagBar(); renderGrid(); renderTagSummary();
     };
-    // If auto-fill pulled official macros from the source page, keep them
-    // around as a reference note alongside the auto-calculated estimate.
-    if (prefill.macros && Object.keys(prefill.macros).length > 0) recipe.macros = prefill.macros;
 
-    addUserRecipe(recipe);
-    closeAddForm();
-    renderTagBar(); renderGrid(); renderTagSummary();
+    const strongMatches = findSimilarRecipes(title, 0.75);
+    if (strongMatches.length > 0) {
+      const names = strongMatches.map(m => `"${m.recipe.title}"`).join(", ");
+      showConfirm(
+        `This looks a lot like an existing recipe (${names}). Save it anyway as a new, separate recipe?`,
+        doSave,
+        { confirmLabel: "Save anyway", cancelLabel: "Cancel", danger: false }
+      );
+    } else {
+      doSave();
+    }
   });
 }
 
@@ -4300,7 +5669,11 @@ async function exportUpdatedFile() {
     if (startIdx === -1 || endOfArrayIdx === -1) throw new Error("Couldn't find the recipe list in this page's source.");
     const afterArrayLineIdx = html.indexOf("\n", endOfArrayIdx + 1) + 1; // just past the "];" line
 
-    const merged = getAllRecipes();
+    // favorite/cookCount are live, per-browser localStorage state (like this
+    // browser's copy of tag/title edits) — not something that should get
+    // baked into every recipe's source entry, so strip them back out before
+    // writing the exported file.
+    const merged = getAllRecipes().map(({ favorite, cookCount, ...rest }) => rest);
     const before = html.slice(0, startIdx);
     const after = html.slice(afterArrayLineIdx);
     const output = before + "const SEED_RECIPES = " + JSON.stringify(merged, null, 2) + ";\n" + after;
@@ -4368,6 +5741,7 @@ document.getElementById("randomRecipeBtn").addEventListener("click", (e) => {
 renderTagBar();
 renderGrid();
 renderTagSummary();
+updateShoppingListBtn();
 startTaglineRotation();
 </script>
 
