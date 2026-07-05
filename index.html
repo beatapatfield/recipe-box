@@ -12,6 +12,8 @@
     --muted: #7a7292;
     --purple: #8b5cf6;
     --pink: #ec4899;
+    --fuchsia: #c026d3;
+    --fuchsia-muted: #a8449c;
     --teal: #2dd4bf;
     --accent: #8b5cf6;
     --accent-soft: #f1e9ff;
@@ -237,7 +239,7 @@
     margin-left: auto;
   }
   .favorites-toggle-btn.active {
-    background: linear-gradient(135deg, #fb7185, var(--pink));
+    background: linear-gradient(135deg, #d9a8de, var(--fuchsia));
     border-color: transparent;
     color: #fff;
   }
@@ -257,9 +259,13 @@
     color: #fff;
   }
   .ideas-filter-btn:hover,
-  .favorites-toggle-btn:hover,
   .shopping-list-btn:hover {
     background: linear-gradient(135deg, #7fcdc0, #3d9188);
+    border-color: transparent;
+    color: #fff;
+  }
+  .favorites-toggle-btn:hover {
+    background: linear-gradient(135deg, #d9a8de, var(--fuchsia));
     border-color: transparent;
     color: #fff;
   }
@@ -297,7 +303,7 @@
     justify-content: center;
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
-  .fav-star-btn.is-fav { color: var(--pink); }
+  .fav-star-btn.is-fav { color: var(--fuchsia-muted); }
   .fav-star-btn:not(.is-fav) { color: #cbd5e1; }
   .cook-count-badge {
     position: absolute;
@@ -321,7 +327,7 @@
     line-height: 1;
     flex-shrink: 0;
   }
-  .modal-fav-btn.is-fav { color: var(--pink); }
+  .modal-fav-btn.is-fav { color: var(--fuchsia-muted); }
   .cook-tracker-row {
     display: flex;
     align-items: center;
@@ -603,6 +609,11 @@
     padding-left: 20px;
   }
   .modal-section li { margin-bottom: 4px; }
+  .notes-body p { margin: 0 0 8px; }
+  .notes-body p:last-child { margin-bottom: 0; }
+  .notes-body ul { margin: 0 0 8px; padding-left: 20px; }
+  .notes-body ul:last-child { margin-bottom: 0; }
+  .notes-body li { margin-bottom: 4px; }
   .macro-disclaimer {
     font-size: 11px;
     color: var(--muted);
@@ -1472,7 +1483,8 @@ const SEED_RECIPES = [
       "Wstawić do nagrzanego piekarnika góra-dół 180 stopni na około 25–30 minut.",
       "Po upieczeniu posypać cukrem pudrem, ewentualnie cynamonem."
     ],
-    notes: "Świetne jako deser czy przekąska, do kawy, herbaty, na śniadanie jako przekąska do śniadaniówki. Świetne dla małych!"
+    macros: { calories: "962 kcal", protein: "46 g", carbs: "122 g", fat: "33 g" },
+    notes: "Whole-recipe macro estimate — not given by the source, calculated by Claude."
   },
   {
     title: "Hidden Veggie Baked Chicken Nuggets",
@@ -3640,7 +3652,8 @@ const SEED_RECIPES = [
       "Układamy na blaszce do pieczenia i zapiekamy w piekarniku przez 20 minut (aż się zarumienią) w 180 stopniach, najlepiej grzanie góra-dół.",
       "Zajadamy z ulubionym dipem."
     ],
-    notes: "Puff pastry pinwheels/rolls with cheese, chicken ham and ketchup, good warm or cold."
+    macros: { calories: "1580 kcal", protein: "59 g", carbs: "99 g", fat: "105 g" },
+    notes: "Whole-recipe macro estimate — not given by the source, calculated by Claude."
   },
   {
     title: "High Protein Crispy Honey Garlic Chicken Fried Rice",
@@ -3684,6 +3697,36 @@ const SEED_RECIPES = [
     ],
     macros: { calories: "3822 kcal", protein: "357 g", carbs: "465.5 g", fat: "49 g" },
     notes: "Makes 7 servings. Per serving (as given by the creator): 546 kcal, 66.5g carbs, 7g fat, 51g protein."
+  },
+  {
+    title: "5 Ingredient Empanada Dough",
+    tags: ["snack", "lunch", "dinner", "vegetarian", "make-ahead"],
+    source: "Salima's Kitchen",
+    sourceLink: "https://salimaskitchen.com/empanada-dough/",
+    image: "",
+    ingredients: [
+      "4 cups all-purpose flour",
+      "1 tsp salt",
+      "1/2 cup unsalted butter, melted",
+      "4 egg yolks",
+      "1 cup water"
+    ],
+    steps: [
+      "Mix the flour with the salt in a large bowl to combine.",
+      "Add the melted butter, egg yolks, and water to the flour mixture.",
+      "Mix together until a dough begins to form. Transfer to a flour-dusted surface and knead until a consistent ball of dough forms. If the dough feels too wet, add flour a tablespoon at a time until it no longer sticks to your hands.",
+      "Cover the dough with a towel and chill in the fridge for at least 30 minutes.",
+      "Divide the dough into quarters, then eighths, then sixteenths (into 32 pieces for smaller empanadas). Roll each piece into a ball, then roll each ball into a round circle on a flour-dusted surface using a rolling pin, about 1/8 inch thick.",
+      "Fill with your choice of filling — don't overfill. Brush the edges with water and crimp shut with a fork. Bake, fry, or air fry (see notes)."
+    ],
+    tips: [
+      "Air fryer method, per Salima (replying to a reader): brush with egg wash and air fry at 350°F for 8-12 minutes, or until golden brown around the edges.",
+      "One reader substituted 6 tablespoons of oil for the butter and said it turned out great.",
+      "Per Salima: you can roll the whole batch of dough out at once and cut rounds with a cutter or tortilla press instead of rolling individual balls — just re-roll the cut rounds slightly before filling, since they tend to shrink back.",
+      "A reader tip: keep the leftover egg whites for the egg wash if you're baking — only needed for baking, not frying.",
+      "Untested by the author: swapping in a gluten-free 1:1 all-purpose flour or almond flour — try at your own risk if going gluten-free."
+    ],
+    notes: "Makes about 16 large empanadas or 32 small ones. To bake: brush with egg wash and bake at 400°F for 20-30 minutes, or until golden brown and flakey. To fry: fry in 350°F oil on both sides until golden brown and flakey. To freeze: stack dough discs between pieces of parchment paper and wrap in plastic wrap; thaw before filling, sealing and cooking.\nPopular filling ideas (per Salima and reader comments):\n- Classic ground beef picadillo — the traditional Puerto Rican filling\n- Guava & cream cheese\n- Apple or cherry pie filling (sweet version)\n- Chicken and cheese\n- Beef and cheese\n- Sweet potato and black beans\n- Vegan chorizo or plant-based \"beef\" crumbles"
   }
 
 ];
@@ -5167,7 +5210,7 @@ function openModal(id) {
     ${(!r.ingredients || !r.ingredients.length) && (!r.steps || !r.steps.length) ? `<div class="modal-section"><div class="idea-note">💡 Just an idea for now — full recipe not written up yet.</div></div>` : ""}
     ${macrosHtml(r)}
     ${hasIngredients ? `<div class="scale-hint no-print">Scaling adjusts ingredient amounts only — macros above are for the original (1x) recipe.</div>` : ""}
-    ${r.notes ? `<div class="modal-section"><h4>Notes</h4><div>${escapeHtml(r.notes)}</div></div>` : ""}
+    ${r.notes ? `<div class="modal-section"><h4>Notes</h4><div class="notes-body">${renderNotesHtml(r.notes)}</div></div>` : ""}
     ${(r.tips && r.tips.length) ? `<div class="modal-section"><h4>Tips from other cooks</h4><ul>${r.tips.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul></div>` : ""}
     ${r.sourceLink ? `<div class="modal-section no-print"><a class="source-link" href="${escapeHtml(r.sourceLink)}" target="_blank" rel="noopener">View original ↗</a></div>` : ""}
     <div class="modal-section modal-actions-row no-print">
@@ -5793,6 +5836,23 @@ function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str == null ? "" : String(str);
   return div.innerHTML;
+}
+
+function renderNotesHtml(notes) {
+  const lines = String(notes || "").split("\n").map(l => l.trim()).filter(Boolean);
+  let html = "";
+  let inList = false;
+  lines.forEach(line => {
+    if (line.startsWith("- ")) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${escapeHtml(line.slice(2))}</li>`;
+    } else {
+      if (inList) { html += "</ul>"; inList = false; }
+      html += `<p>${escapeHtml(line)}</p>`;
+    }
+  });
+  if (inList) html += "</ul>";
+  return html;
 }
 
 document.getElementById("search").addEventListener("input", (e) => {
