@@ -511,6 +511,17 @@
     gap: 8px;
   }
   .modal-title-row h2 { flex: 1; }
+  .inferred-badge {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: help;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    flex-shrink: 0;
+  }
   .title-edit-btn {
     border: none;
     background: none;
@@ -2797,6 +2808,12 @@ const SEED_RECIPES = [
     sourceLink: "", image: "", ingredients: [], steps: [],
   },
   {
+    title: "Carbonara",
+    tags: ["dinner", "pasta"],
+    source: "Personal meal-idea list",
+    sourceLink: "", image: "", ingredients: [], steps: [],
+  },
+  {
     title: "Chocolate Protein Waffle Bites (Lunchbox Idea)",
     tags: ["snack","vegetarian","quick","lunchbox","socials-to-try"],
     source: "Instagram Reel (@natalia_lichwala, screen recording)",
@@ -3727,6 +3744,668 @@ const SEED_RECIPES = [
       "Untested by the author: swapping in a gluten-free 1:1 all-purpose flour or almond flour — try at your own risk if going gluten-free."
     ],
     notes: "Makes about 16 large empanadas or 32 small ones. To bake: brush with egg wash and bake at 400°F for 20-30 minutes, or until golden brown and flakey. To fry: fry in 350°F oil on both sides until golden brown and flakey. To freeze: stack dough discs between pieces of parchment paper and wrap in plastic wrap; thaw before filling, sealing and cooking.\nPopular filling ideas (per Salima and reader comments):\n- Classic ground beef picadillo — the traditional Puerto Rican filling\n- Guava & cream cheese\n- Apple or cherry pie filling (sweet version)\n- Chicken and cheese\n- Beef and cheese\n- Sweet potato and black beans\n- Vegan chorizo or plant-based \"beef\" crumbles"
+  },
+  {
+    title: "Makaron z Twarogiem (Pasta with Curd Cheese & Onion)",
+    tags: ["dinner", "vegetarian", "quick", "pasta"],
+    source: "AniaGotuje.pl",
+    sourceLink: "https://aniagotuje.pl/przepis/makaron-z-twarogiem",
+    image: "",
+    ingredients: [
+      "300 g makaronu suchego, np. świderki",
+      "250 g twarogu, np. chudego",
+      "300 g cebuli (3 małe sztuki), np. cukrowej",
+      "garść szczypiorku (opcjonalnie, można pominąć)",
+      "70 ml oleju roślinnego do smażenia",
+      "1/2 łyżeczki soli",
+      "1/4 płaskiej łyżeczki pieprzu"
+    ],
+    steps: [
+      "Podsmaż cebulkę: nagrzej dużą patelnię z grubym dnem, wlej olej i wyłóż obraną, drobno posiekaną cebulę. Smaż, aż się zeszkli, a potem lekko zarumieni (u autorki około 15 minut). Pod koniec dodaj posiekany szczypiorek i sól.",
+      "Ugotuj makaron w osolonej wodzie (3 l wody na 300 g makaronu, sól dodaj po zagotowaniu) al dente według instrukcji na opakowaniu, mieszając w trakcie. Odcedź.",
+      "Na ugotowany makaron wyłóż zawartość patelni, a następnie pokruszony w dłoniach twaróg. Oprósz świeżo mielonym pieprzem i podawaj."
+    ],
+    macros: { calories: "1790 kcal", carbs: "228 g", protein: "84 g", fat: "60 g" },
+    tips: [
+      "Per Ania: część lub cały olej można zastąpić pokrojoną w kostkę słoniną lub wędzonym boczkiem (wyjdą pyszne skwarki); pod koniec smażenia można dorzucić plasterki kiełbasy.",
+      "Per Ania: makaron pszenny można zamienić na pełnoziarnisty, orkiszowy lub gryczany."
+    ],
+    notes: "Makes about 1200 g (3 servings). Per 100 g (as given by the source): 149 kcal, 19 g carbs (2 g sugars), 7 g protein, 5 g fat — totals above scale that across the whole batch."
+  },
+  {
+    title: "High Protein Berry Bun Bake",
+    tags: ["breakfast", "high-protein", "quick", "dessert"],
+    source: "Instagram (@tishasveggieeats)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Milkfat Greek yogurt",
+      "1 large brown egg",
+      "Liquid egg whites",
+      "Unbleached all-purpose flour",
+      "Vanilla protein powder",
+      "Salt",
+      "Baking powder",
+      "Baking soda",
+      "Olive oil spray",
+      "Strawberries, cubed",
+      "Blueberries",
+      "Sugar in the Raw",
+      "Powdered sugar, for topping",
+      "Sugar-free syrup, for topping"
+    ],
+    steps: [
+      "Mix the wet ingredients: Greek yogurt, egg, and liquid egg whites.",
+      "Mix the dry ingredients: flour, vanilla protein powder, salt, baking powder, baking soda.",
+      "Combine wet and dry into a batter, fold in the cubed strawberries and blueberries.",
+      "Spray a baking dish with olive oil, transfer the batter in, and bake until golden and set.",
+      "Dust with powdered sugar and drizzle with sugar-free syrup before serving."
+    ],
+    macros: { calories: "764 kcal", carbs: "99 g", protein: "72 g", fat: "8 g" },
+    notes: "Makes 2 servings. Source states 382 kcal, 49.5g carbs, 4g fat, 36g protein per serving — totals above scale that to both servings. Exact quantities weren't given by the source, only the ingredient list."
+  },
+  {
+    title: "Creamy Garlic Chicken & Potatoes Meal Prep",
+    tags: ["dinner", "chicken", "meal-prep"],
+    source: "Instagram Reel (@jj.whittle)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Chicken thighs or tenders",
+      "Potatoes, diced",
+      "Red onion, diced",
+      "Smoked paprika",
+      "Garlic powder",
+      "Onion powder",
+      "Black pepper",
+      "Salt",
+      "Heavy cream",
+      "Olive oil"
+    ],
+    steps: [
+      "Season the chicken with smoked paprika, garlic powder, onion powder, pepper, and salt.",
+      "Bake the chicken for about 25 minutes until cooked through.",
+      "Dice the potatoes and sauté with the diced red onion for about 20 minutes until tender.",
+      "Stir in cream to make a sauce, then combine with the cooked chicken and potatoes.",
+      "Divide into meal-prep containers."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — the creator only shared the written recipe via a \"comment for recipe\" gate, so exact quantities and the full ingredient list for the sauce aren't confirmed."
+  },
+  {
+    title: "BBQ Chicken Loaded Potato Skins with Coleslaw",
+    tags: ["dinner", "chicken", "potato"],
+    source: "Instagram Reel (@thedailykale)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Baking potatoes",
+      "Shredded cooked chicken",
+      "BBQ or buffalo sauce",
+      "Shredded cheese",
+      "Coleslaw (shredded cabbage with a creamy dressing)"
+    ],
+    steps: [
+      "Bake the potatoes until tender, halve, and scoop out a little of the flesh.",
+      "Mix the shredded chicken with BBQ or buffalo sauce and pile onto the potato halves.",
+      "Top with shredded cheese and bake or broil until melted and bubbling.",
+      "Top with coleslaw before serving."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — no written recipe or quantities were given by the source."
+  },
+  {
+    title: "Crispy Chickpea Salad Bowl",
+    tags: ["lunch", "salad", "vegetarian", "quick", "summer"],
+    source: "Instagram (@_foodvia_)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Lettuce",
+      "Cucumber",
+      "Bell pepper",
+      "Cherry tomatoes",
+      "Feta",
+      "Parsley",
+      "Avocado",
+      "Red onion",
+      "Chickpeas",
+      "Olive oil",
+      "Sweet paprika",
+      "Oregano",
+      "Herbes de Provence",
+      "15 g olive oil (for dressing)",
+      "5 g honey",
+      "1 tsp table mustard",
+      "1 tsp Dijon mustard",
+      "Lemon juice",
+      "Salt",
+      "Pepper"
+    ],
+    steps: [
+      "Toss the chickpeas with olive oil, sweet paprika, oregano, and herbes de Provence; roast at 200°C for 15 minutes.",
+      "Whisk together the dressing: olive oil, honey, table mustard, Dijon mustard, lemon juice, herbes de Provence, salt, and pepper.",
+      "Assemble the bowl with lettuce, cucumber, bell pepper, cherry tomatoes, feta, parsley, avocado, and red onion.",
+      "Top with the roasted chickpeas and drizzle with the dressing."
+    ],
+    notes: "#obiadnaupalnedni #40stopni #letniobiad #bowlzciecierzycą #szybkiprzepis (source's tags: hot-day lunch, 40 degrees, summer lunch, chickpea bowl, quick recipe)."
+  },
+  {
+    title: "Tomato, Feta & Garlic-Soy Sauce Salad",
+    tags: ["salad", "vegetarian", "quick", "side"],
+    source: "Instagram (@wiesia_gotuje)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "2 beefsteak tomatoes",
+      "1/2 package Greek-style salad feta",
+      "1/2 red onion",
+      "Salt and pepper, to taste",
+      "Chives",
+      "3 tbsp mayonnaise",
+      "1.5 tbsp Greek yogurt",
+      "1 tbsp light soy sauce",
+      "3-4 cloves garlic"
+    ],
+    steps: [
+      "Make the sauce by combining the mayonnaise, Greek yogurt, soy sauce, and garlic.",
+      "Slice the tomatoes and arrange on a plate; season with salt and pepper.",
+      "Top the tomatoes with the sauce, then sliced red onion and cubed feta.",
+      "Sprinkle with chopped chives."
+    ],
+    notes: "#pomidory #salatka #salatkanagrilla #sosczosnkowy #przepis (source's tags: tomatoes, salad, grilling-side salad, garlic sauce, recipe)."
+  },
+  {
+    title: "Creamy Tomato Chicken Pasta",
+    tags: ["dinner", "chicken", "pasta"],
+    source: "Instagram Reel (@klaudia_trener_personalny, screen recording)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Rotini or fusilli pasta",
+      "Chicken breast, diced",
+      "Cherry tomatoes",
+      "Bell peppers, diced",
+      "Heavy cream",
+      "Dried oregano",
+      "Fresh basil",
+      "Garlic"
+    ],
+    steps: [
+      "Sauté the diced chicken with garlic until cooked through.",
+      "Add the diced bell peppers and cherry tomatoes, cook until softened.",
+      "Stir in the cream and dried oregano, simmer into a sauce.",
+      "Toss with the cooked pasta and fresh basil before serving."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — this was a promotional reel with no written recipe or quantities given."
+  },
+  {
+    title: "Tortilla z Pieczarkami (Mushroom & Pepper Cheese Omelette)",
+    tags: ["breakfast", "quick", "vegetarian"],
+    source: "Instagram Reel (@klaudia_trener_personalny, screen recording)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Eggs",
+      "Mushrooms, sliced",
+      "Shredded cheese",
+      "Red bell pepper, diced",
+      "Green bell pepper, diced",
+      "Salt and pepper"
+    ],
+    steps: [
+      "Sauté the sliced mushrooms in a pan until softened.",
+      "Pour beaten eggs over the mushrooms and cook until set on the bottom.",
+      "Top with shredded cheese and the diced peppers.",
+      "Fold or serve open-faced once the cheese has melted."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — no written recipe or quantities were given by the source."
+  },
+  {
+    title: "High-Protein Greek Yogurt Pasta Salad",
+    tags: ["lunch", "pasta", "high-protein", "meal-prep"],
+    source: "Instagram (@workit.app)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Greek yogurt",
+      "Pesto",
+      "Baby spinach",
+      "Red onion",
+      "Cherry tomatoes",
+      "Pasta",
+      "Grilled chicken"
+    ],
+    steps: [
+      "Cook the pasta and let it cool.",
+      "Mix Greek yogurt and pesto together as the dressing base (swapping out mayo for a creamier, higher-protein dressing).",
+      "Combine the cooled pasta with grilled chicken, baby spinach, cherry tomatoes, and red onion.",
+      "Toss everything with the yogurt-pesto dressing."
+    ],
+    notes: "Source describes this as a simple \"formula\" rather than an exact recipe — no quantities given. Around 50g protein per serving, per source."
+  },
+  {
+    title: "Ekspresowe Mini Szarlotki z 3 Składników (3-Ingredient Rice Paper Apple Pastries)",
+    tags: ["dessert", "snack", "quick", "airfryer"],
+    source: "Instagram (@prawie.ogarnieta)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "8 arkuszy papieru ryżowego (8 sheets rice paper)",
+      "0,5 słoika prażonych jabłek (1/2 jar apple pie filling)",
+      "2 jajka (2 eggs)",
+      "Cynamon do jajka, opcjonalnie (cinnamon in the egg wash, optional)",
+      "Cukier puder do posypania, opcjonalnie (powdered sugar for dusting, optional)"
+    ],
+    steps: [
+      "W głębokim talerzu rozkłócić dwa jajka (opcjonalnie z cynamonem).",
+      "Każdą szarlotkę robimy z podwójnego arkusza: zamoczyć pierwszy papier ryżowy w jajku, ułożyć na desce, na niego nałożyć drugi, również namoczony arkusz.",
+      "Na środek wyłożyć solidną porcję prażonych jabłek i zawinąć papier w zgrabną paczuszkę.",
+      "Piec 10 minut w 180 stopniach w Airfryerze."
+    ],
+    notes: "Na 4 sztuki (makes 4). #przepis #przepiszairfryera #mundial2026 (source's tags: recipe, airfryer recipe, World Cup 2026 — a quick snack idea for match day)."
+  },
+  {
+    title: "Greek Chicken Gyro Wraps with 2-Ingredient Yogurt Pita",
+    tags: ["dinner", "chicken", "pita", "meal-prep"],
+    source: "Instagram (@dinewithnika, inspired by @shredhappens)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "6 chicken thighs",
+      "3/4 cup Greek yogurt",
+      "Zest of 1 whole lemon",
+      "3 cloves garlic",
+      "Olive oil",
+      "Seasonings: garlic powder, onion powder, Peruvian seasoning, cumin, cayenne, paprika, red pepper flakes, white pepper, salt & pepper",
+      "1 cup bread flour, plus more as needed",
+      "1 cup plain non-fat Greek yogurt",
+      "3 tsp baking powder",
+      "Seasonings: garlic powder & salt (parsley for topping)",
+      "1/2 cup Greek yogurt (for wrap sauce)",
+      "1/2 cup mayo",
+      "1/2 lemon, juiced",
+      "1 tbsp olive oil",
+      "1-2 cloves garlic",
+      "Seasonings: fresh cilantro, onion powder, salt, pepper",
+      "Tomatoes, cucumber, to serve"
+    ],
+    steps: [
+      "Marinate the chicken thighs in Greek yogurt, lemon zest, garlic, olive oil, and the seasoning blend for at least 30 minutes.",
+      "Bake the chicken at 425°F until internal temperature reaches 165°F or above.",
+      "For the pita: mix bread flour, Greek yogurt, baking powder, garlic powder, and salt into a dough; knead until smooth on a floured surface.",
+      "Split the pita dough into 4 equal balls, roll out, and cook on medium heat until golden brown, flipping when it starts to bubble.",
+      "For the sauce: mix Greek yogurt, mayo, lemon juice, olive oil, garlic, cilantro, onion powder, salt, and pepper.",
+      "Assemble wraps with the chicken, pita, sauce, tomatoes, and cucumber."
+    ],
+    tips: [
+      "Per the source: \"These are all recommendations/estimates! I don't typically measure certain things so please feel free to add more or less of anything.\""
+    ],
+    notes: ""
+  },
+  {
+    title: "Kurczak z Warzywami w Papilotach (Baked Chicken & Vegetable Parcels)",
+    tags: ["dinner", "chicken", "healthy"],
+    source: "Instagram Reel (@klaudia_trener_personalny, screen recording)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Chicken breast",
+      "Carrots, sliced",
+      "Bell peppers, sliced",
+      "Seasoning or glaze of choice",
+      "Parchment paper"
+    ],
+    steps: [
+      "Place the chicken breast and sliced vegetables in the center of a sheet of parchment paper.",
+      "Season or glaze the chicken, then wrap tightly into a sealed parcel.",
+      "Bake until the chicken is cooked through and the vegetables are tender."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — no written recipe or quantities were given by the source."
+  },
+  {
+    title: "Strawberry Cheesecake Pudding",
+    tags: ["dessert", "breakfast", "no-bake", "quick"],
+    source: "Instagram (@choosingchia)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "1 cup plain Greek yogurt or blended cottage cheese",
+      "1 tablespoon vanilla pudding mix",
+      "2 tablespoons cream cheese",
+      "1-2 tablespoons maple syrup, honey, or sweetener of choice",
+      "1 teaspoon vanilla extract",
+      "1 cup strawberries, finely chopped",
+      "1-2 teaspoons maple syrup, for macerating",
+      "1 tbsp strawberry jam, optional",
+      "Nilla wafers, as many as you like (or any vanilla cookies)"
+    ],
+    steps: [
+      "Toss the chopped strawberries with 1-2 teaspoons of maple syrup and let sit 5-10 minutes until juicy and syrupy. Optionally mix in strawberry jam.",
+      "Mix together the Greek yogurt, pudding mix, cream cheese, maple syrup, and vanilla extract until smooth and creamy.",
+      "In a cup, jar, or meal prep container, layer the yogurt mixture with the macerated strawberries and Nilla wafers, repeating until all ingredients are used.",
+      "Cover and refrigerate for at least 2 hours to let everything meld together — overnight is even better."
+    ],
+    notes: "#strawberrycheesecake #nodessert #easydessert (source's tags)."
+  },
+  {
+    title: "Crispy Sesame Salmon Bites",
+    tags: ["dinner", "salmon", "quick"],
+    source: "Instagram Reel (@catherine_printezis)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Salmon fillet, cut into bite-sized pieces",
+      "Sesame seeds",
+      "Soy-based glaze or marinade",
+      "Mixed greens",
+      "Pumpkin seeds",
+      "Sesame cracker, to serve"
+    ],
+    steps: [
+      "Cut the salmon into bite-sized pieces and coat in the soy-based glaze.",
+      "Coat in sesame seeds and pan-sear until crispy and cooked through.",
+      "Serve over mixed greens with pumpkin seeds and a sesame cracker on the side."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — no written recipe or quantities were given by the source."
+  },
+  {
+    title: "Ubijana Feta z Warzywami (Whipped Feta Dip with Vegetables)",
+    tags: ["snack", "appetizer", "vegetarian", "quick"],
+    source: "Instagram (@froelich.klaudia)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "200 g sera typu feta (200g feta cheese)",
+      "100 g jogurtu greckiego (100g Greek yogurt)",
+      "1 ząbek czosnku (1 clove garlic)",
+      "Kilka kropel soku z cytryny (a few drops lemon juice)",
+      "1 pomidor (1 tomato), diced",
+      "1 mały ogórek (1 small cucumber), diced",
+      "1/2 cebuli czerwonej (1/2 red onion), diced",
+      "2 łyżki oliwy (2 tbsp olive oil)",
+      "1 łyżka soku z cytryny (1 tbsp lemon juice)",
+      "Bazylia suszona lub świeża (dried or fresh basil)",
+      "Sól, pieprz (salt, pepper)"
+    ],
+    steps: [
+      "Zblenduj feta, jogurt grecki, czosnek i sok z cytryny na gładką masę.",
+      "Rozłóż ubitą fetę na talerzu i posyp drobno pokrojonymi pomidorem, ogórkiem i czerwoną cebulą.",
+      "Zmieszaj oliwę, sok z cytryny, bazylię, sól i pieprz na sos i skrop nim wierzch."
+    ],
+    notes: "#grill #ubijanafeta #przekąska #conagrilla #szybkiprzepis (source's tags: grill, whipped feta, snack, grill side, quick recipe)."
+  },
+  {
+    title: "Tortilla z Jajkiem (Egg & Mushroom Omelette)",
+    tags: ["breakfast", "quick", "vegetarian"],
+    source: "Instagram Reel (@klaudia_trener_personalny, screen recording)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Eggs",
+      "Mushrooms, sliced",
+      "Bell peppers, diced",
+      "Shredded cheese"
+    ],
+    steps: [
+      "Sauté the sliced mushrooms and diced peppers in a pan.",
+      "Pour beaten eggs over the top and cook until set.",
+      "Top with shredded cheese, fold, and serve."
+    ],
+    inferred: true,
+    notes: "Inferred from the video only — no written recipe or quantities were given by the source."
+  },
+  {
+    title: "Rzodkiewkowo-Ogórkowa Sałatka w Sosie Musztardowym (Radish & Cucumber Salad, Mustard-Mayo Sauce)",
+    tags: ["side", "salad", "vegetarian", "quick"],
+    source: "Instagram Reel (@zniocie_za_bartosza_kopcia)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Radishes, sliced",
+      "Cucumber, sliced",
+      "Red onion (white part only), chopped",
+      "Mayonnaise",
+      "Sour cream",
+      "Mustard",
+      "Garlic, grated",
+      "Salt"
+    ],
+    steps: [
+      "Slice the radishes and cucumber, salt lightly and set aside.",
+      "Finely chop the red onion, using just the white part.",
+      "Mix mayonnaise, sour cream, and mustard together with the grated garlic.",
+      "Combine the vegetables with the sauce and mix well.",
+      "Chill in the fridge before serving."
+    ],
+    inferred: true,
+    notes: "Steps reconstructed from on-screen word captions in the video — no full written recipe or quantities were given."
+  },
+  {
+    title: "Wysokobiałkowe Gofry z Serkiem Wiejskim (High-Protein Cottage Cheese Waffles)",
+    tags: ["breakfast", "high-protein", "quick"],
+    source: "Instagram (@pomiedzykesami)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Serek wiejski wysokobiałkowy - 200g (high-protein cottage cheese, 200g)",
+      "Jajka - 2 sztuki (2 eggs)",
+      "Mąka ryżowa - 5 porządnych łyżek (rice flour, 5 generous tbsp)",
+      "Skrobia/mąka ziemniaczana - 1 płaska łyżka (potato starch, 1 flat tbsp)",
+      "Proszek do pieczenia, opcjonalnie - 1/2 łyżeczki (baking powder, optional)",
+      "Erytrytol (wanilia) - 2 łyżki (erythritol, vanilla, 2 tbsp)",
+      "Śmietana 30% - 200g (30% cream, for topping)",
+      "Świeże maliny (fresh raspberries, for topping)"
+    ],
+    steps: [
+      "Wszystkie składniki na gofry zblenduj na jednolitą masę.",
+      "Gofry smaż na mocno rozgrzanej i lekko natłuszczonej gofrownicy przez kilka minut aż będą złociste i chrupiące.",
+      "Śmietanę ubij na sztywno.",
+      "Gofry podawaj z bitą śmietaną i świeżymi malinami lub innymi ulubionymi dodatkami."
+    ],
+    macros: { protein: "45 g" },
+    notes: "45g protein per serving, per source. #polskiemorze #gofry #serekwiejski #prosteprzepisy #bezcukru #bezglutenowe (source's tags: gluten-free, sugar-free)."
+  },
+  {
+    title: "Sałatka z Makaronem Orzo (Orzo Pasta Salad)",
+    tags: ["salad", "pasta", "meal-prep"],
+    source: "Instagram (@chcesz.gryza)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Makaron orzo - 130 g (orzo pasta)",
+      "Ser gouda w plastrach - 155 g (sliced gouda cheese)",
+      "Polędwica drobiowa - 140 g (chicken/turkey tenderloin, deli-sliced)",
+      "Ogórek zielony - 150 g (cucumber)",
+      "Kukurydza konserwowa (po odsączeniu) - 100 g (canned corn, drained)",
+      "Por - 30 g (leek)",
+      "Papryka czerwona - 100 g (red bell pepper)",
+      "Majonez light - 100 g (light mayo)",
+      "Czosnek granulowany - do smaku (granulated garlic, to taste)",
+      "Papryka wędzona - do smaku (smoked paprika, to taste)",
+      "Szczypiorek (chives)"
+    ],
+    steps: [
+      "Ugotuj makaron orzo zgodnie z instrukcją na opakowaniu i pozostaw do ostygnięcia.",
+      "Do dużej miski dodaj pokrojoną w kostkę polędwicę drobiową, ser gouda, paprykę oraz ogórka.",
+      "Wsyp odsączoną kukurydzę i drobno pokrojonego pora.",
+      "Dodaj ugotowany makaron, dopraw czosnkiem granulowanym i papryką wędzoną.",
+      "Na koniec dodaj majonez light i dokładnie wymieszaj wszystkie składniki."
+    ],
+    macros: { calories: "1601 kcal", protein: "86.4 g", fat: "80.6 g", carbs: "128.3 g" },
+    notes: "#sałatka #sałatkaorzo #przepis #fitprzepis #pomyslnalunch (source's tags)."
+  },
+  {
+    title: "Summer Chicken Pasta Salad",
+    tags: ["lunch", "pasta", "chicken", "meal-prep"],
+    source: "Instagram (@sarahcattersoncoaching)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "500 g chicken, uncooked weight",
+      "250 g pasta, dry weight",
+      "150 g 0% Greek yogurt",
+      "40 g lighter-than-light mayo",
+      "Lemon juice",
+      "Onion powder",
+      "Garlic powder",
+      "Salt",
+      "Pepper",
+      "Chilli flakes",
+      "70 g corn",
+      "Red onion",
+      "Cucumber",
+      "Onion",
+      "Celery",
+      "Spinach",
+      "Rocket"
+    ],
+    steps: [
+      "Cook the chicken and pasta, then let cool.",
+      "Mix the Greek yogurt, mayo, lemon juice, onion powder, garlic powder, salt, pepper, and chilli flakes into a dressing.",
+      "Dice the cucumber, onion, celery, and combine with the corn, spinach, and rocket.",
+      "Toss the pasta, chicken, and vegetables with the dressing."
+    ],
+    macros: { calories: "1704 kcal", protein: "188 g", fat: "12 g", carbs: "220 g" },
+    notes: "Serves 4. Source states 426 kcal, 47g protein, 3g fat, 55g carbs per serving — totals above scale that to all 4 servings. #fatloss #mealprep #weightloss #whatieatinaday #recipe (source's tags)."
+  },
+  {
+    title: "Air Fryer Garlic Parmesan Chicken Wraps",
+    tags: ["lunch", "dinner", "chicken", "airfryer"],
+    source: "Instagram (@boredoflunch, inspired by @iamsfoodstory)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "1 kg boneless chicken breast",
+      "1 tbsp oil",
+      "4 cloves garlic, grated",
+      "1 tbsp paprika or Cajun seasoning",
+      "1 tsp dried oregano",
+      "1 tsp onion powder",
+      "1 tsp dried rosemary",
+      "2 tbsp parmesan cheese, grated",
+      "1/2 lemon, juiced",
+      "Salt and pepper",
+      "3-4 tbsp light mayo or yogurt",
+      "1 tsp Dijon mustard",
+      "1 tbsp parmesan, grated",
+      "1-2 cloves garlic, grated",
+      "1 tsp paprika",
+      "1/2 lemon, juiced",
+      "1 tsp fresh parsley, finely chopped",
+      "Splash of water, to thin the sauce",
+      "Romaine lettuce, diced",
+      "4-6 large tortilla wraps",
+      "1 red onion, diced",
+      "Handful of cherry tomatoes, diced",
+      "1 tbsp parmesan, grated"
+    ],
+    steps: [
+      "Add all the chicken marinade ingredients to a bowl and mix well until evenly coated. Leave to marinate for a few hours if you have time, but if not, it'll still taste great.",
+      "Cook the chicken in an air fryer at 200°C for 17-18 minutes, turning halfway through if needed.",
+      "While the chicken cooks, prepare the sauce by mixing all the sauce ingredients together until smooth and combined.",
+      "Once the chicken is cooked through, load it into the wraps with lettuce, red onion, and cherry tomatoes, and drizzle over the sauce. Serve immediately."
+    ],
+    tips: [
+      "Per the source: they served it with @mashdirect fries with garlic and parmesan on the side."
+    ],
+    notes: "#boredoflunch #chickenwraps #chicken #garlicparm #lunch #dinner (source's tags)."
+  },
+  {
+    title: "Placuszki Twarogowe z Truskawkami (Cottage Cheese Pancakes with Strawberries)",
+    tags: ["breakfast", "dessert", "vegetarian", "quick"],
+    source: "Instagram (@chcesz.gryza)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Twaróg (cottage cheese)",
+      "Jajka (eggs)",
+      "Mąka (flour)",
+      "Truskawki (strawberries)",
+      "Jogurt grecki, do podania (Greek yogurt, for topping)",
+      "Świeża mięta (fresh mint)"
+    ],
+    steps: [
+      "Zblenduj twaróg, jajka i mąkę na gładkie ciasto.",
+      "Smaż małe placuszki na rozgrzanej patelni z obu stron na złoty kolor.",
+      "Podawaj z jogurtem greckim, truskawkami i miętą."
+    ],
+    inferred: true,
+    notes: "400 kcal, per source (no ingredient quantities given). Inferred from the video/photo only."
+  },
+  {
+    title: "Sałatka Ziemniaczana z Jajkiem (Potato Salad with Egg)",
+    tags: ["salad", "lunch", "vegetarian", "side"],
+    source: "Instagram (@chcesz.gryza)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Ziemniaki, ugotowane (potatoes, boiled)",
+      "Jajka na twardo (hard-boiled eggs)",
+      "Rzodkiewki (radishes)",
+      "Awokado (avocado)",
+      "Majonez light lub sos jogurtowy (light mayo or yogurt-based dressing)"
+    ],
+    steps: [
+      "Ugotuj ziemniaki, ostudź i pokrój w kostkę.",
+      "Połącz z pokrojonymi jajkami na twardo, rzodkiewką i awokado.",
+      "Wymieszaj z lekkim majonezem lub sosem jogurtowym."
+    ],
+    inferred: true,
+    notes: "450 kcal, per source (no ingredient quantities given). Inferred from the video/photo only."
+  },
+  {
+    title: "Kurczak a'la Kebab z Ziemniaczkami (Kebab-Spiced Chicken with Potatoes)",
+    tags: ["dinner", "chicken", "potato"],
+    source: "Instagram (@chcesz.gryza)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Kurczak, pokrojony w kostkę (chicken breast, diced)",
+      "Przyprawa kebabowa (kebab/shawarma seasoning)",
+      "Młode ziemniaki (baby potatoes)",
+      "Sałata/rukola (lettuce or arugula)",
+      "Pomidorki koktajlowe (cherry tomatoes)",
+      "Ogórek (cucumber)",
+      "Sos, do podania (sauce, to serve)"
+    ],
+    steps: [
+      "Przyprawij pokrojonego kurczaka przyprawą kebabową i podsmaż lub grilluj do ugotowania i zbrązowienia.",
+      "Upiecz młode ziemniaki do złocistości.",
+      "Podawaj na sałacie z pomidorkami, ogórkiem i sosem z boku."
+    ],
+    inferred: true,
+    notes: "500 kcal, per source (no ingredient quantities given). Inferred from the video/photo only."
+  },
+  {
+    title: "Healthy Caesar Salad",
+    tags: ["lunch", "salad", "chicken", "high-protein"],
+    source: "Instagram Reel (@gymtrav)",
+    sourceLink: "",
+    image: "",
+    ingredients: [
+      "Romaine lettuce",
+      "Cooked chicken, diced",
+      "Hard-boiled eggs, chopped",
+      "Parmesan cheese",
+      "Greek yogurt",
+      "Garlic",
+      "Dijon mustard",
+      "Lemon juice",
+      "Honey"
+    ],
+    steps: [
+      "Chop the romaine lettuce and add to a large bowl.",
+      "Add the diced cooked chicken and chopped hard-boiled eggs.",
+      "Make the dressing: mix Greek yogurt, grated garlic, Dijon mustard, lemon juice, honey, and grated parmesan.",
+      "Toss the salad with the dressing and top with extra parmesan."
+    ],
+    inferred: true,
+    notes: "Makes 4 servings, per source. Steps reconstructed from on-screen word captions in the video — no exact quantities were given."
   }
 
 ];
@@ -5163,6 +5842,7 @@ function openModal(id) {
     ${r.image ? `<img class="modal-img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}">` : `<div class="modal-img-placeholder no-print">📷 No photo yet</div>`}
     <div class="modal-title-row" id="modalTitleRow">
       <h2 id="modalTitleText">${escapeHtml(r.title)}</h2>
+      ${r.inferred ? `<span class="inferred-badge" title="Reconstructed from a video only — the source didn't give a written recipe, so ingredients/steps are Claude's best guess and may contain errors.">✳</span>` : ""}
       <button type="button" class="modal-fav-btn no-print ${r.favorite ? "is-fav" : ""}" id="modalFavBtn" title="${r.favorite ? "Remove from favorites" : "Add to favorites"}">${r.favorite ? "♥" : "♡"}</button>
       <button type="button" class="title-edit-btn no-print" id="editTitleBtn" title="Rename recipe">✎</button>
     </div>
